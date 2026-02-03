@@ -1,0 +1,102 @@
+h2 {
+    color: aqua;
+}
+
+h1 {
+    color: rgb(172, 172, 100);
+}
+
+.Encabezado {
+    background-color: rgb(18, 238, 238);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 40px;
+    gap: 12px;
+    width: 100%;
+    box-sizing: border-box;
+    flex-wrap: wrap;
+}
+
+
+/* 👇 Agrega este bloque debajo del anterior */
+.Encabezado img {
+    width: 50px;        /* Tamaño del logo */
+    height: auto;       /* Mantiene la proporción */
+    object-fit: contain;/* Evita que se deformen */
+}
+
+    
+/* 🔹 Logo */
+.Logo {
+    display: flex;
+    align-items: center;
+}
+
+.Logo img {
+    width: 100px;
+    height: auto;
+    object-fit: contain;
+}
+
+/* 🔹 Menú principal */
+nav ul {
+    display: flex;
+    list-style: none;
+    gap: 30px;
+    margin: 0;
+    padding: 0;
+}
+
+nav li {
+    color: white;
+    font-weight: 500;
+    cursor: pointer;
+    transition: color 0.3s;
+}
+
+nav li:hover {
+    color: #333;
+}
+
+/* 🔹 Redes sociales */
+.redes {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-right: 30px; /* los mueve un poco a la derecha */
+}
+
+.redes img {
+    width: 30px;
+    height: auto;
+    object-fit: contain;
+    transition: transform 0.2s ease;
+}
+
+.redes img:hover {
+    transform: scale(1.1);
+}
+
+/* 🔹 Responsivo (pantallas pequeñas) */
+@media (max-width: 768px) {
+    .Encabezado {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        border-bottom-left-radius: 0;
+        border-bottom-right-radius: 0;
+    }
+
+    nav ul {
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .redes {
+        justify-content: center;
+        margin-right: 0;
+    }
+}
+
+

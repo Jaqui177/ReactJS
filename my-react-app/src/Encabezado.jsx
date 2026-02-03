@@ -12,7 +12,7 @@ function Encabezado () {
             <Logo />
             <Menu />
             <Redes />
-           <h2>Bienvenido a mi sitio</h2>
+           <h2></h2>
         </div>
     );
 }

@@ -1,9 +1,11 @@
 import Encabezado from "./Encabezado";
+import ContenedorTarjeta from "./ContenedorTarjeta";
 
 function App(){
   return (
   <div>
     <Encabezado />
+    <ContenedorTarjeta />
     <h1>5A - EVND</h1>
         <h2>Alumno</h2>
         <h3>Jaquelin</h3>
