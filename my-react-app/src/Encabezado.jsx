@@ -6,11 +6,11 @@ import whatsapp from './assets/whatsapp.png';
 import youtube from './assets/youtube.png';
 import'./Encabezado.css';
 
-function Encabezado () {
+function Encabezado ({ onNavigate }) {
     return (
         <div className= "Encabezado">
             <Logo />
-            <Menu />
+            <Menu onNavigate={onNavigate} />
             <Redes />
            <h2></h2>
         </div>
@@ -26,12 +26,12 @@ function Logo(){
 }
 
 
-function Menu(){
+function Menu({ onNavigate }){
     return (
-        <nav>
+        <nav className="menu">
             <ul>
-                <li>Inicio</li>
-                <li>Acerca de</li>
+                <li onClick={() => onNavigate?.("inicio")}>Inicio</li>
+                <li onClick={() => onNavigate?.("acerca")}>Acerca de</li>
                 <li>Productos</li>
                 <li>Contacto</li>
                 <li>Sucursales</li>
@@ -42,7 +42,7 @@ function Menu(){
 
 function Redes(){
     return (
-        <nav>
+        <nav className="redes">
             <ul>
                 <li><img src={facebook} alt="React facebook" /></li>
                 <li><img src={instagram} alt="React instagram" /></li>

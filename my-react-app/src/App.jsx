@@ -1,17 +1,33 @@
+import { useState } from "react";
 import Encabezado from "./Encabezado";
 import ContenedorTarjeta from "./ContenedorTarjeta";
+import PromosContenidos from "./PromosContenidos";
+import PiePagina from "./PiePagina";
 
 function App(){
+  const [vista, setVista] = useState("inicio");
+
+  const handleNavigate = (seccion) => {
+    setVista(seccion);
+  };
+
   return (
   <div>
-    <Encabezado />
-    <ContenedorTarjeta />
-    <h1>5A - EVND</h1>
-        <h2>Alumno</h2>
-        <h3>Jaquelin</h3>
-        <UserComponent/>
-        <ProfileComponent/>
-        <FeedComponent/>
+    <Encabezado onNavigate={handleNavigate} />
+    {vista === "inicio" && (
+      <>
+        <ContenedorTarjeta />
+        <PromosContenidos />
+        <PiePagina />
+      </>
+    )}
+    {vista === "acerca" && (
+      <>
+        <PromosContenidos />
+        <PiePagina />
+      </>
+    )}
+    
         </div>
   );
 }
