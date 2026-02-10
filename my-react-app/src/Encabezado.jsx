@@ -32,9 +32,11 @@ function Menu({ onNavigate }){
             <ul>
                 <li onClick={() => onNavigate?.("inicio")}>Inicio</li>
                 <li onClick={() => onNavigate?.("acerca")}>Acerca de</li>
-                <li>Productos</li>
-                <li>Contacto</li>
-                <li>Sucursales</li>
+                <li onClick={() => onNavigate?.("productos")}>Productos</li>
+                <li onClick={() => onNavigate?.("contacto")}>Contacto</li>
+                <li onClick={() => onNavigate?.("conciertos")}>Conciertos</li>
+                <li onClick={() => onNavigate?.("galeria")}>Galeria</li>
+                <li onClick={() => onNavigate?.("sucursales")}>Sucursales</li>
             </ul>
         </nav>
     )

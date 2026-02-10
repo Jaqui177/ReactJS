@@ -1,0 +1,84 @@
+.conciertos {
+	padding: 40px 20px;
+	background: linear-gradient(135deg, #848485  100%);
+	min-height: 100vh;
+}
+
+.conciertos__contenedor {
+	max-width: 1200px;
+	margin: 0 auto;
+}
+
+.conciertos__titulo {
+	font-size: 2.5rem;
+	font-weight: 700;
+	text-align: center;
+	color: white;
+	margin-bottom: 16px;
+	letter-spacing: 0.5px;
+	text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.conciertos__descripcion {
+	font-size: 1.1rem;
+	text-align: center;
+	color: rgba(255, 255, 255, 0.95);
+	margin-bottom: 40px;
+	max-width: 800px;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+.conciertos__lista {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+	gap: 24px;
+	margin-top: 32px;
+}
+
+.conciertos__evento {
+	background: rgba(255, 255, 255, 0.95);
+	border-radius: 16px;
+	padding: 28px;
+	box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+	transition: transform 0.3s ease, box-shadow 0.3s ease;
+	border-left: 4px solid #764ba2;
+}
+
+.conciertos__evento:hover {
+	transform: translateY(-12px);
+	box-shadow: 0 12px 24px rgba(0, 0, 0, 0.3);
+}
+
+.conciertos__evento h3 {
+	font-size: 1.5rem;
+	color: #333;
+	margin-bottom: 12px;
+}
+
+.conciertos__fecha {
+	font-size: 0.95rem;
+	color: #764ba2;
+	font-weight: 600;
+	margin-bottom: 8px;
+}
+
+.conciertos__detalles {
+	color: #93afb3;
+	line-height: 1.6;
+	margin: 0;
+}
+
+@media (max-width: 768px) {
+	.conciertos__titulo {
+		font-size: 1.8rem;
+	}
+
+	.conciertos__descripcion {
+		font-size: 1rem;
+	}
+
+	.conciertos__lista {
+		grid-template-columns: 1fr;
+	}
+}

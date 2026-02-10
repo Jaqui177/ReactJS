@@ -23,7 +23,10 @@ function PiePagina() {
 				<div className="pie__col">
 					<h4 className="pie__titulo">Contacto</h4>
 					<ul className="pie__lista">
-	
+	                
+						<li><a href="#">Tel:7641296813</a></li>
+						<li><a href="#">instagram: jaqui_soto</a></li>
+						<li><a href="#">email: jaqui_soto@example.com</a></li>
 					</ul>
 				</div>
 			</div>

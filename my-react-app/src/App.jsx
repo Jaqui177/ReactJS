@@ -3,6 +3,11 @@ import Encabezado from "./Encabezado";
 import ContenedorTarjeta from "./ContenedorTarjeta";
 import PromosContenidos from "./PromosContenidos";
 import PiePagina from "./PiePagina";
+import Productos from "./Productos";
+import Conciertos from "./Conciertos";
+import Galeria from "./Galeria";
+import Contacto from "./Contacto";
+import Sucursales from "./Sucursales";
 
 function App(){
   const [vista, setVista] = useState("inicio");
@@ -27,8 +32,37 @@ function App(){
         <PiePagina />
       </>
     )}
-    
-        </div>
+    {vista === "productos" && (
+      <>
+        <Productos />
+        <PiePagina />
+      </>
+    )}
+    {vista === "conciertos" && (
+      <>
+        <Conciertos />
+        <PiePagina />
+      </>
+    )}
+    {vista === "galeria" && (
+      <>
+        <Galeria />
+        <PiePagina />
+      </>
+    )}
+    {vista === "contacto" && (
+      <>
+        <Contacto />
+        <PiePagina />
+      </>
+    )}
+    {vista === "sucursales" && (
+      <>
+        <Sucursales />
+        <PiePagina />
+      </>
+    )}
+  </div>
   );
 }
 

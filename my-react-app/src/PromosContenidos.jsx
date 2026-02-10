@@ -1,4 +1,4 @@
-import promoImg from './assets/humbe7.png';
+import promoImg from './assets/azul.png';
 import './PromosContenidos.css';
 
 function PromosContenidos() {
