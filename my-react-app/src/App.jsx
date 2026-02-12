@@ -62,6 +62,11 @@ function App(){
         <PiePagina />
       </>
     )}
+    <div style={{ display: "none" }}>
+      <UserComponent />
+      <ProfileComponent />
+      <FeedComponent />
+    </div>
   </div>
   );
 }
@@ -69,8 +74,13 @@ function App(){
 function UserComponent(){
   const nombre = 'Jaquelin';
   const apellido = 'Soto Romero';
-  const nombreCompleto = <h3>Ella se llama: {nombre} y sus apellidos son {apellido}</h3>;
-  return <h3>UserComponent {nombreCompleto}</h3>;
+  const nombreCompleto = <>Ella se llama: {nombre} y sus apellidos son {apellido}</>;
+  return (
+    <>
+      <h3>UserComponent</h3>
+      <h3>{nombreCompleto}</h3>
+    </>
+  );
 }
 
 function ProfileComponent(){
@@ -105,7 +115,7 @@ function FeedComponent() {
   ]
   return (
     <>
-      <p><h2>Lista de Materiales de Construcción</h2></p>
+      <h2>Lista de Materiales de Construcción</h2>
       <ul>
         {
         materiales.map(function(material,index){

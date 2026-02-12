@@ -20,11 +20,11 @@ function Contacto() {
 								<input type="email" id="email" name="email" required />
 							</div>
 							<div className="contacto__grupo">
-								<label htmlFor="asunto">Asunto</label>
+								<label htmlFor="asunto">Telefono</label>
 								<input type="text" id="asunto" name="asunto" required />
 							</div>
 							<div className="contacto__grupo">
-								<label htmlFor="mensaje">Mensaje</label>
+								<label htmlFor="mensaje">Asunto</label>
 								<textarea id="mensaje" name="mensaje" rows="6" required></textarea>
 							</div>
 							<button type="submit" className="contacto__boton">Enviar Mensaje</button>

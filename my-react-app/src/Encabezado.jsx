@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import miLogo from './assets/images.png';
 import facebook from './assets/facebook.png';
 import instagram from './assets/instagram.png';
@@ -16,6 +17,10 @@ function Encabezado ({ onNavigate }) {
         </div>
     );
 }
+
+Encabezado.propTypes = {
+    onNavigate: PropTypes.func,
+};
 
 function Logo(){
     return (
@@ -41,6 +46,10 @@ function Menu({ onNavigate }){
         </nav>
     )
 }
+
+Menu.propTypes = {
+    onNavigate: PropTypes.func,
+};
 
 function Redes(){
     return (
