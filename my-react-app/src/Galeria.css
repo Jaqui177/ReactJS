@@ -55,6 +55,8 @@
 	display: flex;
 	align-items: center;
 	justify-content: center;
+	flex-direction: column;
+	gap: 8px;
 	background: white;
 	border-left: 4px solid #764ba2;
 
@@ -62,6 +64,13 @@
 	font-size: 1.2rem;
 	font-weight: 600;
 	border-radius: 12px;
+}
+
+.galeria__imagen {
+	display: block;
+	max-width: 90%;
+	max-height: 75%;
+	object-fit: contain;
 }
 
 @media (max-width: 768px) {

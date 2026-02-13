@@ -69,6 +69,14 @@
 	margin: 0;
 }
 
+.conciertos__imagen {
+	width: 100%;
+	height: 180px;
+	object-fit: cover;
+	border-radius: 12px;
+	margin: 12px 0;
+}
+
 @media (max-width: 768px) {
 	.conciertos__titulo {
 		font-size: 1.8rem;

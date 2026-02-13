@@ -1,4 +1,8 @@
 import './Conciertos.css';
+import conHumbe1 from './assets/con_humbe1.png';
+import conHumbe2 from './assets/con_humbe2.png';
+import conPaulo1 from './assets/con_paulo1.png';
+import conPaulo2 from './assets/con_paulo2.png';
 
 function Conciertos() {
 	return (
@@ -12,21 +16,25 @@ function Conciertos() {
 				<div className="conciertos__lista">
 					<div className="conciertos__evento">
 						<h3>Concierto de Humbe 2026 </h3>
+						<img src={conHumbe1} alt="Concierto de Humbe" className="conciertos__imagen" />
 						<p className="conciertos__fecha">Próximamente</p>
 						<p className="conciertos__detalles">Detalles del evento</p>
 					</div>
 					<div className="conciertos__evento">
 						<h3>Concierto de Paulo Londra 2026</h3>
+						<img src={conPaulo1} alt="Concierto de Paulo Londra" className="conciertos__imagen" />
 						<p className="conciertos__fecha">Próximamente</p>
 						<p className="conciertos__detalles">Detalles del evento</p>
 					</div>
 					<div className="conciertos__evento">
 						<h3>Concierto de humbe 2027</h3>
+						<img src={conHumbe2} alt="Concierto de Humbe" className="conciertos__imagen" />
 						<p className="conciertos__fecha">Próximamente</p>
 						<p className="conciertos__detalles">Detalles del evento</p>
 					</div>
                     <div className="conciertos__evento">
 						<h3>Concierto de Paulo Londra 2027</h3>
+						<img src={conPaulo2} alt="Concierto de Paulo Londra" className="conciertos__imagen" />
 						<p className="conciertos__fecha">Próximamente</p>
 						<p className="conciertos__detalles">Detalles del evento</p>
 					</div>

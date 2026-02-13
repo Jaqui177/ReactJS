@@ -1,4 +1,5 @@
 import './Sucursales.css';
+import MapaGeolocalizacion from './MapaGeolocalizacion';
 
 function Sucursales() {
 	const getMapSrc = (address) => `https://www.google.com/maps?q=${encodeURIComponent(address)}&output=embed`;
@@ -10,6 +11,10 @@ function Sucursales() {
 				<p className="sucursales__descripcion">
 					Visítanos en cualquiera de nuestras ubicaciones. Estamos cerca de ti para brindarte el mejor servicio.
 				</p>
+				<div className="sucursales__geolocalizacion">
+					<h3 className="sucursales__subtitulo">Tu ubicación</h3>
+					<MapaGeolocalizacion />
+				</div>
 				<div className="sucursales__grid">
 					<div className="sucursales__card">
 						<div className="sucursales__icono">📍</div>
