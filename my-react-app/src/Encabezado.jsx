@@ -5,6 +5,7 @@ import instagram from './assets/instagram.png';
 import tiktok from './assets/tiktok.png';
 import whatsapp from './assets/whatsapp.png';
 import youtube from './assets/youtube.png';
+import Clima from './clima.jsx';
 import'./Encabezado.css';
 
 function Encabezado ({ onNavigate }) {
@@ -13,6 +14,7 @@ function Encabezado ({ onNavigate }) {
             <Logo />
             <Menu onNavigate={onNavigate} />
             <Redes />
+            <Clima />
            <h2></h2>
         </div>
     );
