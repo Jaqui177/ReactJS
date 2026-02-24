@@ -8,10 +8,10 @@ import './ContenedorTarjeta.css';
 function ContenedorTarjeta() {
     return (
         <div className="contenedor-tarjetas">
-            <Tarjeta imagen={paulo} titulo="Esta es una tarjeta" descripcion="Esta es el título que considero que sera la optimización, por eso la descripción del texto a modo" />
-            <Tarjeta imagen={humbe1} titulo="Esta es una tarjeta" descripcion="Esta es el título que considero que sera la optimización, por eso la descripción del texto a modo" />
-            <Tarjeta imagen={humbe} titulo="Esta es una tarjeta" descripcion="Esta es el título que considero que sera la optimización, por eso la descripción del texto a modo" />
-            <Tarjeta imagen={paulo1} titulo="Esta es una tarjeta" descripcion="Esta es el título que considero que sera la optimización, por eso la descripción del texto a modo" />
+            <Tarjeta imagen={paulo} titulo="Paulo Londra" descripcion="Es un cantante y compositor argentino de música urbana y trap." />
+            <Tarjeta imagen={humbe1} titulo="Humbe" descripcion="Es un artista emergente en la escena musical." />
+            <Tarjeta imagen={humbe} titulo="Humbe" descripcion="Es un artista emergente en la escena musical." />
+            <Tarjeta imagen={paulo1} titulo="Paulo Londra" descripcion="Es un cantante y compositor argentino de música urbana y trap." />
         </div>
     );
 }

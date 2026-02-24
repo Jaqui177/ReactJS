@@ -1,0 +1,229 @@
+.carrito-container {
+  padding: 40px 20px;
+  background: linear-gradient(to bottom, #f5f5f5, #e8e8e8);
+  min-height: 100vh;
+  font-family: Arial, sans-serif;
+}
+
+.titulo-carrito {
+  text-align: center;
+  color: #131313;
+  font-size: 2.5rem;
+  margin-bottom: 40px;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+  font-weight: 600;
+}
+
+.api-info {
+  text-align: center;
+  color: #666;
+  font-size: 1rem;
+  margin-bottom: 30px;
+  font-style: italic;
+  background-color: rgba(255, 255, 255, 0.6);
+  padding: 10px;
+  border-radius: 5px;
+  display: inline-block;
+  width: 100%;
+}
+
+.loading-message,
+.error-message {
+  text-align: center;
+  font-size: 1.5rem;
+  padding: 40px;
+  background-color: rgba(255, 255, 255, 0.95);
+  border-radius: 10px;
+  margin: 20px auto;
+  max-width: 500px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+.loading-message {
+  color: #b3b5bb;
+}
+
+.error-message {
+  color: #c84b4b;
+}
+
+.carritos-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+  padding: 20px 0;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.carrito-card {
+  background: rgba(255, 255, 255, 0.85);
+  border-radius: 12px;
+  padding: 30px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.carrito-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+}
+
+.carrito-numero {
+  position: static;
+  background-color: transparent;
+  color: #6b5d55;
+  width: auto;
+  height: auto;
+  border-radius: 0;
+  display: block;
+  text-align: left;
+  font-weight: 600;
+  font-size: 1.8rem;
+  box-shadow: none;
+  margin-bottom: 15px;
+}
+
+.carrito-fecha {
+  color: #a67c78;
+  font-size: 1rem;
+  margin-bottom: 20px;
+  padding: 0;
+  font-weight: 500;
+  text-align: left;
+  background-color: transparent;
+  border-radius: 0;
+}
+
+.productos-titulo {
+  color: #c9908d;
+  font-size: 1.2rem;
+  margin: 20px 0 15px 0;
+  font-weight: 600;
+  text-align: left;
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.productos-lista {
+  list-style: disc;
+  padding-left: 25px;
+  margin: 15px 0 25px 0;
+}
+
+.producto-item {
+  color: #7a8ba3;
+  font-size: 0.95rem;
+  padding: 5px 0;
+  margin: 5px 0;
+  background-color: transparent;
+  border-radius: 0;
+  border-left: none;
+  transition: none;
+  line-height: 1.6;
+}
+
+.producto-item:hover {
+  background-color: transparent;
+  transform: none;
+}
+
+.btn-comprar-carrito {
+  width: 100%;
+  padding: 12px 20px;
+  background-color: #ddb3b8;
+  color: #5a4a42;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 500;
+  font-size: 0.95rem;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  text-transform: capitalize;
+  letter-spacing: 0.3px;
+}
+
+.btn-comprar-carrito:hover {
+  background-color: #d19fa5;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+}
+
+.btn-comprar-carrito:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.mensaje-vacio {
+  text-align: center;
+  padding: 60px 20px;
+  background-color: rgba(255, 255, 255, 0.9);
+  border-radius: 15px;
+  margin: 40px auto;
+  max-width: 600px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+}
+
+.mensaje-vacio p {
+  color: #8b7355;
+  font-size: 1.3rem;
+  margin: 0;
+  font-weight: 500;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .titulo-carrito {
+    font-size: 2rem;
+  }
+  
+  .carritos-lista {
+    max-width: 100%;
+    padding: 10px;
+  }
+  
+  .carrito-card {
+    padding: 25px 20px;
+  }
+  
+  .productos-titulo {
+    font-size: 1.1rem;
+  }
+  
+  .producto-item {
+    font-size: 0.85rem;
+  }
+  
+  .btn-comprar-carrito {
+    font-size: 0.9rem;
+    padding: 10px 15px;
+  }
+}
+
+@media (max-width: 480px) {
+  .titulo-carrito {
+    font-size: 1.8rem;
+  }
+  
+  .carrito-card {
+    padding: 20px 15px;
+  }
+  
+  .carrito-numero {
+    font-size: 1.5rem;
+  }
+  
+  .carrito-fecha {
+    font-size: 0.85rem;
+  }
+  
+  .productos-titulo {
+    font-size: 1rem;
+  }
+  
+  .producto-item {
+    font-size: 0.8rem;
+  }
+}

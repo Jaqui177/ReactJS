@@ -8,6 +8,8 @@ import Conciertos from "./Conciertos";
 import Galeria from "./Galeria";
 import Contacto from "./Contacto";
 import Sucursales from "./Sucursales";
+import UsuariosRegistrados from "./UsuariosRegistrados";
+import Carrito from "./carrito";
 
 function App(){
   const [vista, setVista] = useState("inicio");
@@ -59,6 +61,18 @@ function App(){
     {vista === "sucursales" && (
       <>
         <Sucursales />
+        <PiePagina />
+      </>
+    )}
+    {vista === "usuarios" && (
+      <>
+        <UsuariosRegistrados />
+        <PiePagina />
+      </>
+    )}
+    {vista === "carrito" && (
+      <>
+        <Carrito />
         <PiePagina />
       </>
     )}
