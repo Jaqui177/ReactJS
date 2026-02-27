@@ -40,6 +40,35 @@ const Carrito = () => {
     return producto ? producto.title : `Producto #${productId}`;
   };
 
+  // Función para eliminar un producto de un carrito
+  const handleEliminarProducto = (carritoId, productId) => {
+    if (window.confirm('¿Eliminar este producto del carrito?')) {
+      setCarritos((prev) =>
+        prev.map((carrito) => {
+          if (carrito.id !== carritoId) return carrito;
+          return {
+            ...carrito,
+            products: carrito.products.filter((p) => p.productId !== productId),
+          };
+        })
+      );
+    }
+  };
+
+  // Función para eliminar un carrito completo
+  const handleEliminarCarrito = async (carritoId) => {
+    if (window.confirm('¿Eliminar este carrito?')) {
+      try {
+        const API_URL = import.meta.env.VITE_FAKESTORE_API_KEY || 'https://fakestoreapi.com';
+        await axios.delete(`${API_URL}/carts/${carritoId}`);
+        setCarritos(carritos.filter(carrito => carrito.id !== carritoId));
+      } catch (err) {
+        console.error('Error al eliminar carrito:', err);
+        alert('Hubo un error al eliminar el carrito');
+      }
+    }
+  };
+
   // Función para comprar un carrito
   const handleComprar = async (carritoId) => {
     if (window.confirm('¿Estás seguro de que deseas comprar este carrito?')) {
@@ -100,13 +129,25 @@ const Carrito = () => {
               {carrito.products.map((producto, index) => (
                 <li key={index} className="producto-item">
                   Producto #{producto.productId} — Cantidad {producto.quantity}
+                  <button
+                    className="btn-eliminar-producto"
+                    onClick={() => handleEliminarProducto(carrito.id, producto.productId)}
+                  >
+                    Eliminar
+                  </button>
+                  <button
+                    className="btn-agregar-producto"
+                    onClick={() => alert('Función de agregar pendiente')}
+                  >
+                    Agregar
+                  </button>
                 </li>
               ))}
             </ul>
             
             <button 
               className="btn-comprar-carrito"
-              onClick={() => handleComprar(carrito.id)}
+              onClick={() => handleEliminarCarrito(carrito.id)}
             >
               Comprar
             </button>

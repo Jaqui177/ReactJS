@@ -24,6 +24,70 @@
 	margin-bottom: 40px;
 }
 
+.productos__registro {
+	background: rgba(255, 255, 255, 0.95);
+	border-radius: 12px;
+	padding: 20px;
+	box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+	margin-bottom: 30px;
+}
+
+.productos__registro-titulo {
+	margin: 0 0 15px;
+	font-size: 1.4rem;
+	color: #333;
+	text-align: center;
+}
+
+.productos__registro-form {
+	display: grid;
+	grid-template-columns: 2fr 1fr auto;
+	gap: 10px;
+	align-items: center;
+	margin-bottom: 15px;
+}
+
+.productos__registro-form input {
+	padding: 10px 12px;
+	border: 1px solid #cfd6e6;
+	border-radius: 8px;
+	font-size: 0.95rem;
+}
+
+.productos__registro-btn {
+	padding: 10px 16px;
+	border: none;
+	border-radius: 8px;
+	background: #6a11cb;
+	color: #fff;
+	font-weight: bold;
+	cursor: pointer;
+	transition: transform 0.2s ease, box-shadow 0.2s ease;
+	box-shadow: 0 6px 14px rgba(106, 17, 203, 0.35);
+}
+
+.productos__registro-btn:hover {
+	transform: translateY(-2px);
+}
+
+.productos__registro-tabla {
+	width: 100%;
+	border-collapse: collapse;
+}
+
+.productos__registro-tabla th,
+.productos__registro-tabla td {
+	padding: 10px 12px;
+	border-bottom: 1px solid #e3e6f0;
+	text-align: left;
+}
+
+.productos__registro-tabla th {
+	background: #f1f3f8;
+	text-transform: uppercase;
+	font-size: 0.85rem;
+}
+
 .productos__grid {
 	display: grid;
 	grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -72,6 +136,48 @@
 	margin-top: 10px;
 }
 
+.productos__acciones {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 12px;
+	margin-top: 12px;
+}
+
+.productos__btn {
+	padding: 8px 14px;
+	border-radius: 8px;
+	border: none;
+	font-size: 0.95rem;
+	font-weight: bold;
+	cursor: pointer;
+	transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+
+.productos__btn--agregar {
+	background: #6a11cb;
+	color: #fff;
+	box-shadow: 0 6px 14px rgba(106, 17, 203, 0.35);
+}
+
+.productos__btn--eliminar {
+	background: #f2f2f2;
+	color: #333;
+	box-shadow: 0 6px 14px rgba(0, 0, 0, 0.15);
+}
+
+.productos__btn:hover {
+	transform: translateY(-2px);
+}
+
+.productos__cantidad {
+	min-width: 24px;
+	text-align: center;
+	font-size: 1rem;
+	font-weight: 600;
+	color: #333;
+}
+
 .productos-error {
 	color: white;
 	text-align: center;
@@ -91,5 +197,9 @@
 	.productos__grid {
 		grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
 		gap: 20px;
+	}
+
+	.productos__registro-form {
+		grid-template-columns: 1fr;
 	}
 }

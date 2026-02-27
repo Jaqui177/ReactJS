@@ -10,6 +10,7 @@ import Contacto from "./Contacto";
 import Sucursales from "./Sucursales";
 import UsuariosRegistrados from "./UsuariosRegistrados";
 import Carrito from "./carrito";
+import RegistrarProductos from "./RegistrarProductos";
 
 function App(){
   const [vista, setVista] = useState("inicio");
@@ -37,6 +38,12 @@ function App(){
     {vista === "productos" && (
       <>
         <Productos />
+        <PiePagina />
+      </>
+    )}
+    {vista === "registrarProductos" && (
+      <>
+        <RegistrarProductos />
         <PiePagina />
       </>
     )}

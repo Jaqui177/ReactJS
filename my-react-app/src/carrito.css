@@ -122,11 +122,42 @@
   border-left: none;
   transition: none;
   line-height: 1.6;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
 }
 
 .producto-item:hover {
   background-color: transparent;
   transform: none;
+}
+
+.btn-eliminar-producto,
+.btn-agregar-producto {
+  padding: 6px 10px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.btn-eliminar-producto {
+  background-color: #ddb3b8;
+  color: #5a4a42;
+}
+
+.btn-agregar-producto {
+  background-color: #cfe3ff;
+  color: #3d4f6a;
+}
+
+.btn-eliminar-producto:hover,
+.btn-agregar-producto:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
 }
 
 .btn-comprar-carrito {

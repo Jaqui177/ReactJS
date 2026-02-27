@@ -1,0 +1,245 @@
+.registrar-productos {
+	min-height: 100vh;
+	padding: 50px 20px;
+	background: linear-gradient(135deg, #f0f4ff 0%, #fdf2f8 100%);
+}
+
+.registrar-productos__contenedor {
+	max-width: 1200px;
+	margin: 0 auto;
+}
+
+.registrar-productos__encabezado {
+	text-align: center;
+	margin-bottom: 40px;
+}
+
+.registrar-productos__encabezado h2 {
+	font-size: 2.4rem;
+	color: #1f2937;
+	margin-bottom: 10px;
+}
+
+.registrar-productos__encabezado p {
+	font-size: 1.1rem;
+	color: #4b5563;
+}
+
+.registrar-productos__contenido {
+	display: grid;
+	grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+	gap: 32px;
+	align-items: start;
+}
+
+.registrar-productos__formulario {
+	background: #ffffff;
+	border-radius: 16px;
+	padding: 28px;
+	box-shadow: 0 20px 40px rgba(15, 23, 42, 0.08);
+	display: flex;
+	flex-direction: column;
+	gap: 18px;
+}
+
+.registrar-productos__fila {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 16px;
+}
+
+.registrar-productos__grupo {
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+}
+
+.registrar-productos__grupo label {
+	font-weight: 600;
+	color: #1f2937;
+}
+
+.registrar-productos__grupo input,
+.registrar-productos__grupo textarea {
+	border: 1px solid #e5e7eb;
+	border-radius: 10px;
+	padding: 12px 14px;
+	font-size: 0.95rem;
+	font-family: inherit;
+	transition: border 0.2s ease, box-shadow 0.2s ease;
+}
+
+.registrar-productos__grupo input:focus,
+.registrar-productos__grupo textarea:focus {
+	outline: none;
+	border-color: #6366f1;
+	box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+}
+
+.registrar-productos__mensaje {
+	padding: 10px 14px;
+	border-radius: 10px;
+	font-weight: 600;
+}
+
+.registrar-productos__mensaje--error {
+	background: #fee2e2;
+	color: #b91c1c;
+}
+
+.registrar-productos__mensaje--exito {
+	background: #dcfce7;
+	color: #15803d;
+}
+
+.registrar-productos__acciones {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 12px;
+}
+
+.registrar-productos__boton {
+	border: none;
+	border-radius: 10px;
+	padding: 12px 22px;
+	font-weight: 600;
+	cursor: pointer;
+	background: #e5e7eb;
+	color: #111827;
+	transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.registrar-productos__boton--primario {
+	background: #6366f1;
+	color: #ffffff;
+	box-shadow: 0 12px 25px rgba(99, 102, 241, 0.3);
+}
+
+.registrar-productos__boton:hover {
+	transform: translateY(-1px);
+}
+
+.registrar-productos__lista {
+	background: #ffffff;
+	border-radius: 16px;
+	padding: 24px;
+	box-shadow: 0 20px 40px rgba(15, 23, 42, 0.08);
+}
+
+.registrar-productos__resumen {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	margin-bottom: 16px;
+}
+
+.registrar-productos__resumen h3 {
+	margin: 0;
+	color: #1f2937;
+}
+
+.registrar-productos__resumen span {
+	color: #6b7280;
+	font-weight: 600;
+}
+
+.registrar-productos__vacio {
+	text-align: center;
+	padding: 30px 20px;
+	background: #f9fafb;
+	border-radius: 12px;
+	color: #6b7280;
+}
+
+.registrar-productos__grid {
+	display: grid;
+	gap: 18px;
+}
+
+.registrar-productos__card {
+	border: 1px solid #e5e7eb;
+	border-radius: 14px;
+	overflow: hidden;
+	display: grid;
+	grid-template-columns: 120px 1fr;
+	gap: 16px;
+	background: #ffffff;
+}
+
+.registrar-productos__card-imagen {
+	background: #f3f4f6;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: 10px;
+	font-size: 0.8rem;
+	color: #6b7280;
+}
+
+.registrar-productos__card-imagen img {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+
+.registrar-productos__card-info {
+	padding: 14px 14px 16px 0;
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+}
+
+.registrar-productos__card-info h4 {
+	margin: 0;
+	color: #111827;
+}
+
+.registrar-productos__card-categoria {
+	margin: 0;
+	font-weight: 600;
+	color: #6366f1;
+}
+
+.registrar-productos__card-descripcion {
+	margin: 0;
+	color: #6b7280;
+	font-size: 0.9rem;
+}
+
+.registrar-productos__card-detalles {
+	display: flex;
+	gap: 16px;
+	font-weight: 600;
+	color: #111827;
+}
+
+.registrar-productos__eliminar {
+	align-self: flex-start;
+	background: #fee2e2;
+	color: #b91c1c;
+	border: none;
+	padding: 8px 14px;
+	border-radius: 8px;
+	cursor: pointer;
+	font-weight: 600;
+}
+
+@media (max-width: 960px) {
+	.registrar-productos__contenido {
+		grid-template-columns: 1fr;
+	}
+}
+
+@media (max-width: 640px) {
+	.registrar-productos__fila {
+		grid-template-columns: 1fr;
+	}
+
+	.registrar-productos__card {
+		grid-template-columns: 1fr;
+	}
+
+	.registrar-productos__card-imagen {
+		height: 160px;
+	}
+}

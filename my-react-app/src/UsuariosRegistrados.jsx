@@ -8,6 +8,10 @@ const UsuariosRegistrados = () => {
   const [error, setError] = useState(null);
   const [editando, setEditando] = useState(false);
   const [usuarioEditando, setUsuarioEditando] = useState(null);
+  const [registroNombre, setRegistroNombre] = useState("");
+  const [registroUsername, setRegistroUsername] = useState("");
+  const [registroEmail, setRegistroEmail] = useState("");
+  const [registros, setRegistros] = useState([]);
 
   // Cargar usuarios desde la API
   useEffect(() => {
@@ -73,6 +77,20 @@ const UsuariosRegistrados = () => {
     }
   };
 
+  const handleRegistrarUsuario = () => {
+    const nombre = registroNombre.trim();
+    const username = registroUsername.trim();
+    const email = registroEmail.trim();
+    if (!nombre || !username || !email) return;
+    setRegistros((prev) => [
+      ...prev,
+      { id: Date.now(), nombre, username, email }
+    ]);
+    setRegistroNombre("");
+    setRegistroUsername("");
+    setRegistroEmail("");
+  };
+
   // Mostrar mensaje de carga
   if (loading) {
     return (
@@ -97,6 +115,62 @@ const UsuariosRegistrados = () => {
     <div className="usuarios-registrados-container">
       <h1 className="titulo-usuarios">Usuarios Registrados</h1>
       <p className="api-info"></p>
+
+      <div className="usuarios-registro">
+        <h2 className="usuarios-registro-titulo">Registrar usuario</h2>
+        <div className="usuarios-registro-form">
+          <input
+            type="text"
+            placeholder="Nombre"
+            value={registroNombre}
+            onChange={(e) => setRegistroNombre(e.target.value)}
+          />
+          <input
+            type="text"
+            placeholder="Nombre de usuario"
+            value={registroUsername}
+            onChange={(e) => setRegistroUsername(e.target.value)}
+          />
+          <input
+            type="email"
+            placeholder="Email"
+            value={registroEmail}
+            onChange={(e) => setRegistroEmail(e.target.value)}
+          />
+          <button
+            type="button"
+            className="usuarios-registro-btn"
+            onClick={handleRegistrarUsuario}
+          >
+            Registrar
+          </button>
+        </div>
+
+        <table className="usuarios-registro-tabla">
+          <thead>
+            <tr>
+              <th>Nombre</th>
+              <th>Username</th>
+              <th>Email</th>
+            </tr>
+          </thead>
+          <tbody>
+            {registros.length === 0 ? (
+              <tr>
+                <td colSpan="3">Sin registros aún</td>
+              </tr>
+            ) : (
+              registros.map((item) => (
+                <tr key={item.id}>
+                  <td>{item.nombre}</td>
+                  <td>{item.username}</td>
+                  <td>{item.email}</td>
+                </tr>
+              ))
+            )}
+          </tbody>
+        </table>
+      </div>
       
       {/* Modal de edición */}
       {editando && usuarioEditando && (

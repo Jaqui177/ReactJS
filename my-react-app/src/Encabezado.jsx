@@ -40,6 +40,7 @@ function Menu({ onNavigate }){
                 <li onClick={() => onNavigate?.("inicio")}>Inicio</li>
                 <li onClick={() => onNavigate?.("acerca")}>Acerca de</li>
                 <li onClick={() => onNavigate?.("productos")}>Productos</li>
+                <li onClick={() => onNavigate?.("registrarProductos")}>Registrar Productos</li>
                 <li onClick={() => onNavigate?.("contacto")}>Contacto</li>
                 <li onClick={() => onNavigate?.("conciertos")}>Conciertos</li>
                 <li onClick={() => onNavigate?.("galeria")}>Galeria</li>
