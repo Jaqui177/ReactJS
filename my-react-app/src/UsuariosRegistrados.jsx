@@ -6,6 +6,7 @@ const UsuariosRegistrados = () => {
   const [usuarios, setUsuarios] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [usuarioSeleccionado, setUsuarioSeleccionado] = useState(null);
   const [editando, setEditando] = useState(false);
   const [usuarioEditando, setUsuarioEditando] = useState(null);
   const [registroNombre, setRegistroNombre] = useState("");
@@ -13,9 +14,7 @@ const UsuariosRegistrados = () => {
   const [registroEmail, setRegistroEmail] = useState("");
   const [registros, setRegistros] = useState([]);
 
-  // Cargar usuarios desde la API
-  useEffect(() => {
-    const fetchUsuarios = async () => {
+  const fetchUsuarios = async () => {
       try {
         setLoading(true);
         const API_URL = import.meta.env.VITE_FAKESTORE_API_KEY || 'https://fakestoreapi.com';
@@ -42,6 +41,11 @@ const UsuariosRegistrados = () => {
       }
     };
 
+  // Cargar usuarios desde la API
+
+  useEffect(() => {
+
+    
     fetchUsuarios();
   }, []);
 
@@ -79,12 +83,12 @@ const UsuariosRegistrados = () => {
 
   const handleRegistrarUsuario = () => {
     const nombre = registroNombre.trim();
-    const username = registroUsername.trim();
+    const contraseña = registroUsername.trim();
     const email = registroEmail.trim();
-    if (!nombre || !username || !email) return;
+    if (!nombre || !contraseña || !email) return;
     setRegistros((prev) => [
       ...prev,
-      { id: Date.now(), nombre, username, email }
+      { id: Date.now(), nombre, contraseña, email }
     ]);
     setRegistroNombre("");
     setRegistroUsername("");
@@ -150,7 +154,7 @@ const UsuariosRegistrados = () => {
           <thead>
             <tr>
               <th>Nombre</th>
-              <th>Username</th>
+              <th>Contraseña</th>
               <th>Email</th>
             </tr>
           </thead>
@@ -163,7 +167,7 @@ const UsuariosRegistrados = () => {
               registros.map((item) => (
                 <tr key={item.id}>
                   <td>{item.nombre}</td>
-                  <td>{item.username}</td>
+                  <td>{item.contraseña}</td>
                   <td>{item.email}</td>
                 </tr>
               ))

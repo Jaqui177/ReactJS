@@ -10,6 +10,7 @@ function Productos() {
 	const [cantidades, setCantidades] = useState({});
 	const [registroNombre, setRegistroNombre] = useState("");
 	const [registroPrecio, setRegistroPrecio] = useState("");
+	const [registroDescripcion, setRegistroDescripcion] = useState("");
 	const [registros, setRegistros] = useState([]);
 
 	const handleAgregar = (id) => {
@@ -33,13 +34,15 @@ function Productos() {
 	const handleRegistrarProducto = () => {
 		const nombre = registroNombre.trim();
 		const precio = registroPrecio.trim();
+		const descripcion = registroDescripcion.trim();
 		if (!nombre || !precio) return;
 		setRegistros((prev) => [
 			...prev,
-			{ id: Date.now(), nombre, precio },
+			{ id: Date.now(), nombre, precio, descripcion },
 		]);
 		setRegistroNombre("");
 		setRegistroPrecio("");
+		setRegistroDescripcion("");
 	};
 
 	useEffect(() => {
@@ -78,7 +81,13 @@ function Productos() {
 
 				<div className="productos__registro">
 					<h2 className="productos__registro-titulo">Registrar producto</h2>
-					<div className="productos__registro-form">
+					<form
+						className="productos__registro-form"
+						onSubmit={(e) => {
+							e.preventDefault();
+							handleRegistrarProducto();
+						}}
+					>
 						<input
 							type="text"
 							placeholder="Nombre del producto"
@@ -91,37 +100,29 @@ function Productos() {
 							value={registroPrecio}
 							onChange={(e) => setRegistroPrecio(e.target.value)}
 						/>
-						<button
-							type="button"
-							className="productos__registro-btn"
-							onClick={handleRegistrarProducto}
-						>
-							Registrar
-						</button>
-					</div>
+						<textarea
+							placeholder="Descripción corta del producto (opcional)"
+							value={registroDescripcion}
+							onChange={(e) => setRegistroDescripcion(e.target.value)}
+						/>
+						<div className="productos__registro-acciones">
+							<button type="submit" className="productos__registro-btn">Registrar</button>
+						</div>
+					</form>
 
-					<table className="productos__registro-tabla">
-						<thead>
-							<tr>
-								<th>Producto</th>
-								<th>Precio</th>
-							</tr>
-						</thead>
-						<tbody>
-							{registros.length === 0 ? (
-								<tr>
-									<td colSpan="2">Sin registros aún</td>
-								</tr>
-							) : (
-								registros.map((item) => (
-									<tr key={item.id}>
-										<td>{item.nombre}</td>
-										<td>${item.precio}</td>
-									</tr>
-								))
-							)}
-						</tbody>
-					</table>
+					<div className="productos__registros-list">
+						{registros.length === 0 ? (
+							<p>Sin registros aún</p>
+						) : (
+							<ul>
+								{registros.map((item) => (
+									<li key={item.id} className="registro-item">
+										{item.nombre} — ${item.precio} {item.descripcion ? `— ${item.descripcion}` : ''}
+									</li>
+								))}
+							</ul>
+						)}
+					</div>
 				</div>
 				<div className="productos__grid">
 					{productos.map((producto) => (
