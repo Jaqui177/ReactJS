@@ -56,6 +56,60 @@
   font-size: 0.95rem;
 }
 
+/* Formulario vertical similar al diseño mostrado */
+.usuarios-registro-contenedor {
+  max-width: 520px;
+  margin: 0 auto 20px;
+  padding: 18px;
+  background: white;
+  border-radius: 12px;
+}
+
+.usuarios-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.usuarios-form label {
+  font-size: 0.9rem;
+  color: #333;
+}
+
+.usuarios-form input {
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 8px;
+  border: 1px solid #e0e6ef;
+  background-color: #fafbfd;
+  font-size: 1rem;
+}
+
+.usuarios-registro-btn--green {
+  background: #2ecc71;
+  color: white;
+  width: 100%;
+  padding: 12px 16px;
+  border-radius: 8px;
+  border: none;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 8px 18px rgba(46, 204, 113, 0.18);
+}
+
+.usuarios-registro-btn--green:hover {
+  background: #25b65d;
+  transform: translateY(-2px);
+}
+
+.titulo-usuarios-registrados {
+  text-align: center;
+  color: #e8aeb6;
+  font-size: 2rem;
+  margin: 18px 0;
+  text-transform: capitalize;
+}
+
 .usuarios-registro-btn {
   padding: 10px 16px;
   border: none;

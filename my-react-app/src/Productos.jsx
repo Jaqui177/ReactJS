@@ -13,6 +13,17 @@ function Productos() {
 	const [registroDescripcion, setRegistroDescripcion] = useState("");
 	const [registros, setRegistros] = useState([]);
 
+	// Estado para formulario de registro de productos (solo formulario)
+	const [productoForm, setProductoForm] = useState({
+		nombre: '',
+		precio: '',
+		categoria: '',
+		imagen: '',
+		descripcion: '',
+		stock: '',
+	});
+	const [productoMensaje, setProductoMensaje] = useState('');
+
 	const handleAgregar = (id) => {
 		setCantidades((prev) => ({
 			...prev,
@@ -124,6 +135,77 @@ function Productos() {
 						)}
 					</div>
 				</div>
+				{/* Formulario de registro de productos (solo el formulario) */}
+				<div className="productos__registro-formulario">
+					<h2 className="productos__registro-titulo">Registrar producto</h2>
+					<form
+						className="productos__registro-form"
+						onSubmit={(e) => {
+							e.preventDefault();
+							const nombre = productoForm.nombre.trim();
+							const precio = Number(productoForm.precio);
+							const categoria = productoForm.categoria.trim();
+							const imagen = productoForm.imagen.trim();
+							const descripcion = productoForm.descripcion.trim();
+							const stock = Number(productoForm.stock);
+							if (!nombre || !precio || precio <= 0 || !categoria || isNaN(stock) || stock < 0) {
+								setProductoMensaje('Completa los campos requeridos con valores válidos.');
+								return;
+							}
+							const nuevo = {
+								id: Date.now(),
+								title: nombre,
+								price: precio,
+								image: imagen || '',
+								description: descripcion,
+								category: categoria,
+								stock,
+							};
+							setProductos((prev) => [nuevo, ...prev]);
+							setProductoForm({ nombre: '', precio: '', categoria: '', imagen: '', descripcion: '', stock: '' });
+							setProductoMensaje('Producto registrado correctamente.');
+						}}
+					>
+						<input
+							type="text"
+							placeholder="Nombre del producto"
+							value={productoForm.nombre}
+							onChange={(e) => setProductoForm((p) => ({ ...p, nombre: e.target.value }))}
+						/>
+						<input
+							type="number"
+							placeholder="Precio"
+							value={productoForm.precio}
+							onChange={(e) => setProductoForm((p) => ({ ...p, precio: e.target.value }))}
+						/>
+						<input
+							type="number"
+							placeholder="Stock"
+							value={productoForm.stock}
+							onChange={(e) => setProductoForm((p) => ({ ...p, stock: e.target.value }))}
+						/>
+						<input
+							type="text"
+							placeholder="Categoría"
+							value={productoForm.categoria}
+							onChange={(e) => setProductoForm((p) => ({ ...p, categoria: e.target.value }))}
+						/>
+						<input
+							type="url"
+							placeholder="Imagen (URL)"
+							value={productoForm.imagen}
+							onChange={(e) => setProductoForm((p) => ({ ...p, imagen: e.target.value }))}
+						/>
+						<textarea
+							placeholder="Descripción"
+							value={productoForm.descripcion}
+							onChange={(e) => setProductoForm((p) => ({ ...p, descripcion: e.target.value }))}
+						/>
+						<button type="submit" className="productos__registro-btn">Registrar producto</button>
+						{productoMensaje && <p className="productos__registro-mensaje">{productoMensaje}</p>}
+					</form>
+				</div>
+
 				<div className="productos__grid">
 					{productos.map((producto) => (
 						<div key={producto.id} className="productos__card">

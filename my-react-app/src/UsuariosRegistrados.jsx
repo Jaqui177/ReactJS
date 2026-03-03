@@ -10,7 +10,7 @@ const UsuariosRegistrados = () => {
   const [editando, setEditando] = useState(false);
   const [usuarioEditando, setUsuarioEditando] = useState(null);
   const [registroNombre, setRegistroNombre] = useState("");
-  const [registroUsername, setRegistroUsername] = useState("");
+  const [registroPassword, setRegistroPassword] = useState("");
   const [registroEmail, setRegistroEmail] = useState("");
   const [registros, setRegistros] = useState([]);
 
@@ -83,15 +83,15 @@ const UsuariosRegistrados = () => {
 
   const handleRegistrarUsuario = () => {
     const nombre = registroNombre.trim();
-    const contraseña = registroUsername.trim();
+    const password = registroPassword.trim();
     const email = registroEmail.trim();
-    if (!nombre || !contraseña || !email) return;
+    if (!nombre || !password || !email) return;
     setRegistros((prev) => [
       ...prev,
-      { id: Date.now(), nombre, contraseña, email }
+      { id: Date.now(), nombre, password, email }
     ]);
     setRegistroNombre("");
-    setRegistroUsername("");
+    setRegistroPassword("");
     setRegistroEmail("");
   };
 
@@ -117,45 +117,56 @@ const UsuariosRegistrados = () => {
 
   return (
     <div className="usuarios-registrados-container">
-      <h1 className="titulo-usuarios">Usuarios Registrados</h1>
+      <h1 className="titulo-usuarios">Registrar Usuarios</h1>
       <p className="api-info"></p>
 
       <div className="usuarios-registro">
-        <h2 className="usuarios-registro-titulo">Registrar usuario</h2>
-        <div className="usuarios-registro-form">
-          <input
-            type="text"
-            placeholder="Nombre"
-            value={registroNombre}
-            onChange={(e) => setRegistroNombre(e.target.value)}
-          />
-          <input
-            type="text"
-            placeholder="Nombre de usuario"
-            value={registroUsername}
-            onChange={(e) => setRegistroUsername(e.target.value)}
-          />
-          <input
-            type="email"
-            placeholder="Email"
-            value={registroEmail}
-            onChange={(e) => setRegistroEmail(e.target.value)}
-          />
-          <button
-            type="button"
-            className="usuarios-registro-btn"
-            onClick={handleRegistrarUsuario}
+        <div className="usuarios-registro-contenedor">
+          <h2 className="usuarios-registro-titulo">Registrar Usuarios</h2>
+          <form
+            className="usuarios-form"
+            onSubmit={(e) => {
+              e.preventDefault();
+              handleRegistrarUsuario();
+            }}
           >
-            Registrar
-          </button>
-        </div>
+            <label htmlFor="registroNombre">Nombre de Usuario:</label>
+            <input
+              id="registroNombre"
+              type="text"
+              placeholder="Ej. Juan Perez"
+              value={registroNombre}
+              onChange={(e) => setRegistroNombre(e.target.value)}
+            />
 
-        <table className="usuarios-registro-tabla">
+            <label htmlFor="registroEmail">Email:</label>
+            <input
+              id="registroEmail"
+              type="email"
+              placeholder="correo@ejemplo.com"
+              value={registroEmail}
+              onChange={(e) => setRegistroEmail(e.target.value)}
+            />
+
+            <label htmlFor="registroPassword">Password:</label>
+            <input
+              id="registroPassword"
+              type="password"
+              placeholder="Password"
+              value={registroPassword}
+              onChange={(e) => setRegistroPassword(e.target.value)}
+            />
+
+            <button type="submit" className="usuarios-registro-btn usuarios-registro-btn--green">Registrar</button>
+          </form>
+
+          <div className="usuarios-registro-pequena-tabla">
+            <table className="usuarios-registro-tabla">
           <thead>
             <tr>
-              <th>Nombre</th>
-              <th>Contraseña</th>
-              <th>Email</th>
+                <th>Nombre</th>
+                <th>Contraseña</th>
+                <th>Email</th>
             </tr>
           </thead>
           <tbody>
@@ -166,14 +177,15 @@ const UsuariosRegistrados = () => {
             ) : (
               registros.map((item) => (
                 <tr key={item.id}>
-                  <td>{item.nombre}</td>
-                  <td>{item.contraseña}</td>
-                  <td>{item.email}</td>
+                    <td>{item.nombre}</td>
+                    <td>{item.password}</td>
+                    <td>{item.email}</td>
                 </tr>
               ))
             )}
           </tbody>
         </table>
+          </div>
       </div>
       
       {/* Modal de edición */}
@@ -252,6 +264,7 @@ const UsuariosRegistrados = () => {
       )}
 
       <div className="tabla-container">
+        <h2 className="titulo-usuarios-registrados">Usuarios Registrados</h2>
         <table className="tabla-usuarios">
           <thead>
             <tr>
