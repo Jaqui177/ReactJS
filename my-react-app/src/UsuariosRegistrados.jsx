@@ -116,7 +116,7 @@ const UsuariosRegistrados = () => {
   }
 
   return (
-    <div className="usuarios-registrados-container">
+    <div className="usuarios-registrados-container"> 
       <h1 className="titulo-usuarios">Registrar Usuarios</h1>
       <p className="api-info"></p>
 
@@ -311,6 +311,7 @@ const UsuariosRegistrados = () => {
         </table>
       </div>
     </div>
+  </div>
   );
 };
 
