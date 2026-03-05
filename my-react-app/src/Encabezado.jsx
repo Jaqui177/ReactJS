@@ -1,4 +1,5 @@
 import PropTypes from 'prop-types';
+import React from 'react';
 import miLogo from './assets/images.png';
 import facebook from './assets/facebook.png';
 import instagram from './assets/instagram.png';
@@ -15,7 +16,6 @@ function Encabezado ({ onNavigate }) {
             <Menu onNavigate={onNavigate} />
             <Redes />
             <Clima />
-           <h2></h2>
         </div>
     );
 }
@@ -41,6 +41,7 @@ function Menu({ onNavigate }){
                 <li onClick={() => onNavigate?.("acerca")}>Acerca de</li>
                 <li onClick={() => onNavigate?.("productos")}>Productos</li>
                 <li onClick={() => onNavigate?.("registrarProductos")}>Registrar Productos</li>
+                <li onClick={() => onNavigate?.("login")}>Iniciar Sesión</li>
                 <li onClick={() => onNavigate?.("contacto")}>Contacto</li>
                 <li onClick={() => onNavigate?.("conciertos")}>Conciertos</li>
                 <li onClick={() => onNavigate?.("galeria")}>Galeria</li>
@@ -54,6 +55,7 @@ function Menu({ onNavigate }){
 
 Menu.propTypes = {
     onNavigate: PropTypes.func,
+    onShowLogin: PropTypes.func,
 };
 
 function Redes(){

@@ -90,51 +90,7 @@ function Productos() {
 					Descubre nuestra selección de productos de alta calidad
 				</p>
 
-				<div className="productos__registro">
-					<h2 className="productos__registro-titulo">Registrar producto</h2>
-					<form
-						className="productos__registro-form"
-						onSubmit={(e) => {
-							e.preventDefault();
-							handleRegistrarProducto();
-						}}
-					>
-						<input
-							type="text"
-							placeholder="Nombre del producto"
-							value={registroNombre}
-							onChange={(e) => setRegistroNombre(e.target.value)}
-						/>
-						<input
-							type="number"
-							placeholder="Precio"
-							value={registroPrecio}
-							onChange={(e) => setRegistroPrecio(e.target.value)}
-						/>
-						<textarea
-							placeholder="Descripción corta del producto (opcional)"
-							value={registroDescripcion}
-							onChange={(e) => setRegistroDescripcion(e.target.value)}
-						/>
-						<div className="productos__registro-acciones">
-							<button type="submit" className="productos__registro-btn">Registrar</button>
-						</div>
-					</form>
 
-					<div className="productos__registros-list">
-						{registros.length === 0 ? (
-							<p>Sin registros aún</p>
-						) : (
-							<ul>
-								{registros.map((item) => (
-									<li key={item.id} className="registro-item">
-										{item.nombre} — ${item.precio} {item.descripcion ? `— ${item.descripcion}` : ''}
-									</li>
-								))}
-							</ul>
-						)}
-					</div>
-				</div>
 				{/* Formulario de registro de productos (solo el formulario) */}
 				<div className="productos__registro-formulario">
 					<h2 className="productos__registro-titulo">Registrar producto</h2>
@@ -218,7 +174,16 @@ function Productos() {
 									onClick={() => handleEliminar(producto.id)}
 									aria-label={`Eliminar ${producto.title}`}
 								>
-									Eliminar
+								    Eliminar
+								</button>
+
+							    <button
+									className="productos__btn productos__btn--editar"
+									onClick={() => handleEditar(producto.id)}
+									aria-label={`Editar ${producto.title}`}
+								>
+									Editar
+
 								</button>
 								<span className="productos__cantidad">{cantidades[producto.id] || 0}</span>
 								<button

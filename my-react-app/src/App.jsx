@@ -11,6 +11,7 @@ import Sucursales from "./Sucursales";
 import UsuariosRegistrados from "./UsuariosRegistrados";
 import Carrito from "./carrito";
 import RegistrarProductos from "./RegistrarProductos";
+import Login from "./Login";
 
 function App(){
   const [vista, setVista] = useState("inicio");
@@ -81,6 +82,11 @@ function App(){
       <>
         <Carrito />
         <PiePagina />
+      </>
+    )}
+    {vista === "login" && (
+      <>
+        <Login fullPage />
       </>
     )}
     <div style={{ display: "none" }}>

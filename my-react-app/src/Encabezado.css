@@ -116,4 +116,54 @@ nav li:hover {
     }
 }
 
+/* Estilos cuando el formulario Login está en la cabecera */
+.header-login{
+    display:flex;
+    align-items:center;
+    justify-content:flex-end;
+    flex:1;
+}
+
+.header-login .login-form{
+    width:240px;
+    background: rgba(255,255,255,0.95);
+    padding:8px 10px;
+    border-radius:8px;
+    box-shadow: 0 6px 14px rgba(0,0,0,0.06);
+    text-align:left;
+}
+
+.header-login .login-form .avatar img{
+    width:40px;
+    height:40px;
+    border-radius:50%;
+    border:2px solid #e6f7ff;
+    margin-right:8px;
+}
+
+.header-login .login-form h2{
+    display:none; /* ocultar título en cabecera */
+}
+
+.header-login .field{
+    display:inline-block;
+    vertical-align:middle;
+    margin:0 6px 0 0;
+}
+
+.header-login .field span{display:none}
+
+.header-login .field input{width:120px;padding:6px 8px;font-size:13px}
+
+.header-login .buttons{display:flex;gap:6px;margin-top:0}
+
+.header-login .btn{padding:6px 8px;font-size:13px}
+
+@media (max-width:768px){
+  .header-login{justify-content:center;width:100%}
+  .header-login .login-form{width:92%;display:flex;align-items:center;gap:8px}
+  .header-login .field input{width:100%}
+}
+
+
 

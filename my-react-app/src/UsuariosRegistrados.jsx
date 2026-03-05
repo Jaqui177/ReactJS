@@ -134,7 +134,7 @@ const UsuariosRegistrados = () => {
             <input
               id="registroNombre"
               type="text"
-              placeholder="Ej. Juan Perez"
+              placeholder=""
               value={registroNombre}
               onChange={(e) => setRegistroNombre(e.target.value)}
             />
@@ -143,7 +143,7 @@ const UsuariosRegistrados = () => {
             <input
               id="registroEmail"
               type="email"
-              placeholder="correo@ejemplo.com"
+              placeholder=""
               value={registroEmail}
               onChange={(e) => setRegistroEmail(e.target.value)}
             />
@@ -152,7 +152,7 @@ const UsuariosRegistrados = () => {
             <input
               id="registroPassword"
               type="password"
-              placeholder="Password"
+              placeholder=""
               value={registroPassword}
               onChange={(e) => setRegistroPassword(e.target.value)}
             />
@@ -160,32 +160,7 @@ const UsuariosRegistrados = () => {
             <button type="submit" className="usuarios-registro-btn usuarios-registro-btn--green">Registrar</button>
           </form>
 
-          <div className="usuarios-registro-pequena-tabla">
-            <table className="usuarios-registro-tabla">
-          <thead>
-            <tr>
-                <th>Nombre</th>
-                <th>Contraseña</th>
-                <th>Email</th>
-            </tr>
-          </thead>
-          <tbody>
-            {registros.length === 0 ? (
-              <tr>
-                <td colSpan="3">Sin registros aún</td>
-              </tr>
-            ) : (
-              registros.map((item) => (
-                <tr key={item.id}>
-                    <td>{item.nombre}</td>
-                    <td>{item.password}</td>
-                    <td>{item.email}</td>
-                </tr>
-              ))
-            )}
-          </tbody>
-        </table>
-          </div>
+          
       </div>
       
       {/* Modal de edición */}
