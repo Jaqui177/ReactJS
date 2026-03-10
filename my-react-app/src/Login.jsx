@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
 import './Login.css';
+import { useAuth} from './AuthContext';
+
 
 function Login({ onClose, fullPage = false }) {
-  const [view, setView] = useState('login'); // 'login' | 'create' | 'change'
-
+  const [view, setView] = useState('login'); 
+  const { login } = useAuth();
   const [inputUser, setInputUser] = useState('');
   const [password, setPassword] = useState('');
-  const [rememberMe, setRememberMe] = useState(false);
 
   const [createUsername, setCreateUsername] = useState('');
   const [createEmail, setCreateEmail] = useState('');
@@ -16,7 +17,7 @@ function Login({ onClose, fullPage = false }) {
   const [newPassword, setNewPassword] = useState('');
 
   const [message, setMessage] = useState('');
-
+ 
   const loadUsers = () => JSON.parse(localStorage.getItem('users') || '[]');
   const saveUsers = (users) => localStorage.setItem('users', JSON.stringify(users));
 
@@ -26,7 +27,7 @@ function Login({ onClose, fullPage = false }) {
     const user = users.find(u => u.username === inputUser || u.email === inputUser);
     if (user && user.password === password) {
       setMessage('Acceso exitoso');
-      localStorage.setItem('currentUser', JSON.stringify(user));
+      login(user);
       setTimeout(() => {
         setMessage('');
         onClose && onClose();

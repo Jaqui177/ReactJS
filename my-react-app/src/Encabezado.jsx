@@ -34,26 +34,33 @@ function Logo(){
 
 
 function Menu({ onNavigate }){
+    const isLoggedIn = Boolean(localStorage.getItem('currentUser'));
+
+    const handleLogout = () => {
+        localStorage.removeItem('currentUser');
+        onNavigate?.('inicio');
+    };
+
     return (
         <nav className="menu">
             <ul>
                 <li onClick={() => onNavigate?.("inicio")}>Inicio</li>
                 <li onClick={() => onNavigate?.("acerca")}>Acerca de</li>
                 <li onClick={() => onNavigate?.("productos")}>Productos</li>
-                {isLoggedin ? (
+                <li onClick={() => onNavigate?.("galeria")}>Galeria</li>
+                <li onClick={() => onNavigate?.("sucursales")}>Sucursales</li>
+                <li onClick={() => onNavigate?.("contacto")}>Contacto</li>
+                <li onClick={() => onNavigate?.("conciertos")}>Conciertos</li>
+                {isLoggedIn ? (
                     <>
+                        <li onClick={() => onNavigate?.("usuarios")}>Usuarios</li>
+                        <li onClick={() => onNavigate?.("carrito")}>Carrito</li>
                         <li onClick={() => onNavigate?.("registrarProductos")}>Registrar Productos</li>
-                        <li onClick={() => onNavigate?.("logout")}>Cerrar Sesión</li>
+                        <li onClick={handleLogout}>Cerrar Sesión</li>
                     </>
                 ) : (
                     <li onClick={() => onNavigate?.("login")}>Iniciar Sesión</li>
                 )}
-                <li onClick={() => onNavigate?.("contacto")}>Contacto</li>
-                <li onClick={() => onNavigate?.("conciertos")}>Conciertos</li>
-                <li onClick={() => onNavigate?.("galeria")}>Galeria</li>
-                <li onClick={() => onNavigate?.("sucursales")}>Sucursales</li>
-                <li onClick={() => onNavigate?.("usuarios")}>Usuarios</li>
-                <li onClick={() => onNavigate?.("carrito")}>Carrito</li>
             </ul>
         </nav>
     )
