@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import axios from 'axios';
 import './Login.css';
 import { useAuth} from './AuthContext';
 
@@ -21,19 +22,48 @@ function Login({ onClose, fullPage = false }) {
   const loadUsers = () => JSON.parse(localStorage.getItem('users') || '[]');
   const saveUsers = (users) => localStorage.setItem('users', JSON.stringify(users));
 
-  const handleLogin = (e) => {
+  const fetchUsersFromApi = async () => {
+    const API_URL = import.meta.env.VITE_FAKESTORE_API_KEY || 'https://fakestoreapi.com';
+    const response = await axios.get(`${API_URL}/users`);
+    const mapped = response.data.map(user => ({
+      id: user.id,
+      username: user.username,
+      email: user.email,
+      password: user.password,
+      nombre: user.name?.firstname || '',
+      apellidos: user.name?.lastname || '',
+      direccion: `${user.address?.street || ''} ${user.address?.number || ''} ${user.address?.city || ''} ${user.address?.zipcode || ''}`.trim(),
+      telefono: user.phone || ''
+    }));
+    saveUsers(mapped);
+    return mapped;
+  };
+
+  const handleLogin = async (e) => {
     e.preventDefault();
-    const users = loadUsers();
-    const user = users.find(u => u.username === inputUser || u.email === inputUser);
+    let users = loadUsers();
+    if (!users.length) {
+      try {
+        users = await fetchUsersFromApi();
+      } catch (err) {
+        setMessage('No se pudieron cargar los usuarios');
+        return;
+      }
+    }
+    const input = inputUser.trim().toLowerCase();
+    const user = users.find(u => {
+      const username = (u.username || "").toLowerCase();
+      const email = (u.email || u.correo || "").toLowerCase();
+      return username === input || email === input;
+    });
     if (user && user.password === password) {
       setMessage('Acceso exitoso');
       login(user);
-      setTimeout(() => {
-        setMessage('');
-        onClose && onClose();
-      }, 700);
+      window.alert('Autenticacion autorizada');
+      setMessage('');
+      onClose && onClose();
     } else {
-      setMessage('Usuario o contraseña incorrectos');
+      setMessage('Usuario o contrase?a incorrectos');
     }
   };
 

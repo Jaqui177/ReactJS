@@ -12,7 +12,17 @@ const UsuariosRegistrados = () => {
   const [registroNombre, setRegistroNombre] = useState("");
   const [registroPassword, setRegistroPassword] = useState("");
   const [registroEmail, setRegistroEmail] = useState("");
-  const [registros, setRegistros] = useState([]);
+  const loadLocalUsers = () => {
+    try {
+      return JSON.parse(localStorage.getItem('users') || '[]');
+    } catch {
+      return [];
+    }
+  };
+
+  const saveLocalUsers = (list) => {
+    localStorage.setItem('users', JSON.stringify(list));
+  };
 
   const fetchUsuarios = async () => {
       try {
@@ -32,7 +42,42 @@ const UsuariosRegistrados = () => {
           password: user.password
         }));
         
-        setUsuarios(usuariosFormateados);
+        const localUsers = loadLocalUsers();
+        const merged = [...usuariosFormateados];
+        for (const local of localUsers) {
+          const exists = merged.some(
+            (u) =>
+              (u.username && local.username && u.username === local.username) ||
+              (u.correo && local.email && u.correo === local.email) ||
+              (u.correo && local.correo && u.correo === local.correo)
+          );
+          if (!exists) {
+            merged.push({
+              id: local.id || Date.now(),
+              nombre: local.nombre || local.username || '',
+              apellidos: local.apellidos || '',
+              direccion: local.direccion || '',
+              telefono: local.telefono || '',
+              correo: local.email || local.correo || '',
+              username: local.username || '',
+              password: local.password || ''
+            });
+          }
+        }
+
+        setUsuarios(merged);
+        saveLocalUsers(
+          merged.map((u) => ({
+            id: u.id,
+            username: u.username,
+            email: u.correo,
+            password: u.password,
+            nombre: u.nombre,
+            apellidos: u.apellidos,
+            direccion: u.direccion,
+            telefono: u.telefono
+          }))
+        );
         setLoading(false);
       } catch (err) {
         console.error('Error al cargar usuarios:', err);
@@ -61,9 +106,22 @@ const UsuariosRegistrados = () => {
   };
 
   const handleGuardar = () => {
-    setUsuarios(usuarios.map(u => 
+    const next = usuarios.map(u => 
       u.id === usuarioEditando.id ? usuarioEditando : u
-    ));
+    );
+    setUsuarios(next);
+    saveLocalUsers(
+      next.map((u) => ({
+        id: u.id,
+        username: u.username,
+        email: u.correo,
+        password: u.password,
+        nombre: u.nombre,
+        apellidos: u.apellidos,
+        direccion: u.direccion,
+        telefono: u.telefono
+      }))
+    );
     setEditando(false);
     setUsuarioEditando(null);
   };
@@ -77,7 +135,20 @@ const UsuariosRegistrados = () => {
 
   const handleEliminar = (id) => {
     if (window.confirm('¿Estás seguro de que deseas eliminar este usuario?')) {
-      setUsuarios(usuarios.filter(usuario => usuario.id !== id));
+      const next = usuarios.filter(usuario => usuario.id !== id);
+      setUsuarios(next);
+      saveLocalUsers(
+        next.map((u) => ({
+          id: u.id,
+          username: u.username,
+          email: u.correo,
+          password: u.password,
+          nombre: u.nombre,
+          apellidos: u.apellidos,
+          direccion: u.direccion,
+          telefono: u.telefono
+        }))
+      );
     }
   };
 
@@ -86,10 +157,31 @@ const UsuariosRegistrados = () => {
     const password = registroPassword.trim();
     const email = registroEmail.trim();
     if (!nombre || !password || !email) return;
-    setRegistros((prev) => [
-      ...prev,
-      { id: Date.now(), nombre, password, email }
-    ]);
+    const username = nombre;
+    const nuevo = {
+      id: Date.now(),
+      nombre,
+      apellidos: '',
+      direccion: '',
+      telefono: '',
+      correo: email,
+      username,
+      password
+    };
+    const next = [...usuarios, nuevo];
+    setUsuarios(next);
+    saveLocalUsers(
+      next.map((u) => ({
+        id: u.id,
+        username: u.username,
+        email: u.correo,
+        password: u.password,
+        nombre: u.nombre,
+        apellidos: u.apellidos,
+        direccion: u.direccion,
+        telefono: u.telefono
+      }))
+    );
     setRegistroNombre("");
     setRegistroPassword("");
     setRegistroEmail("");

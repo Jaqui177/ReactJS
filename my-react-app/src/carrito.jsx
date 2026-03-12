@@ -14,7 +14,6 @@ const Carrito = () => {
       try {
         setLoading(true);
         const API_URL = import.meta.env.VITE_FAKESTORE_API_KEY || 'https://fakestoreapi.com';
-        
         // Obtener todos los carritos
         const carritosResponse = await axios.get(`${API_URL}/carts`);
         
@@ -59,8 +58,6 @@ const Carrito = () => {
   const handleEliminarCarrito = async (carritoId) => {
     if (window.confirm('¿Eliminar este carrito?')) {
       try {
-        const API_URL = import.meta.env.VITE_FAKESTORE_API_KEY || 'https://fakestoreapi.com';
-        await axios.delete(`${API_URL}/carts/${carritoId}`);
         setCarritos(carritos.filter(carrito => carrito.id !== carritoId));
       } catch (err) {
         console.error('Error al eliminar carrito:', err);
@@ -73,11 +70,6 @@ const Carrito = () => {
   const handleComprar = async (carritoId) => {
     if (window.confirm('¿Estás seguro de que deseas comprar este carrito?')) {
       try {
-        const API_URL = import.meta.env.VITE_FAKESTORE_API_KEY || 'https://fakestoreapi.com';
-        
-        // Simular compra en la API
-        await axios.delete(`${API_URL}/carts/${carritoId}`);
-        
         // Actualizar el estado local
         setCarritos(carritos.filter(carrito => carrito.id !== carritoId));
         alert('¡Compra realizada con éxito!');

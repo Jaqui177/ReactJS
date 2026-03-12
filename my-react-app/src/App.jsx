@@ -8,6 +8,7 @@ import Conciertos from "./Conciertos";
 import Galeria from "./Galeria";
 import Contacto from "./Contacto";
 import Sucursales from "./Sucursales";
+import Categorias from "./Categorias";
 import UsuariosRegistrados from "./UsuariosRegistrados";
 import Carrito from "./carrito";
 import RegistrarProductos from "./RegistrarProductos";
@@ -72,6 +73,12 @@ function App(){
         <PiePagina />
       </>
     )}
+    {vista === "categorias" && (
+      <>
+        <Categorias />
+        <PiePagina />
+      </>
+    )}
     {vista === "usuarios" && (
       <>
         <UsuariosRegistrados />
@@ -86,7 +93,7 @@ function App(){
     )}
     {vista === "login" && (
       <>
-        <Login fullPage />
+        <Login fullPage onClose={() => setVista("inicio")} />
       </>
     )}
     <div style={{ display: "none" }}>

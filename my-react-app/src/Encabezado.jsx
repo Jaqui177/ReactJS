@@ -54,6 +54,7 @@ function Menu({ onNavigate }){
                 {isLoggedIn ? (
                     <>
                         <li onClick={() => onNavigate?.("usuarios")}>Usuarios</li>
+                        <li onClick={() => onNavigate?.("categorias")}>Categorias</li>
                         <li onClick={() => onNavigate?.("carrito")}>Carrito</li>
                         <li onClick={() => onNavigate?.("registrarProductos")}>Registrar Productos</li>
                         <li onClick={handleLogout}>Cerrar Sesión</li>

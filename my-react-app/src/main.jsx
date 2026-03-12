@@ -2,6 +2,7 @@ import React, { useEffect } from 'react'
 import ReactDOM from 'react-dom/client'
 import App from './App.jsx'
 import { AuthProvider } from './AuthContext'
+import { GoogleMapsProvider } from './GoogleMapsProvider'
 import './index.css'
 
 function _RemoveUnwantedPhrases() {
@@ -43,8 +44,10 @@ function _RemoveUnwantedPhrases() {
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <AuthProvider>
-      <_RemoveUnwantedPhrases />
-      <App />
+      <GoogleMapsProvider>
+        <_RemoveUnwantedPhrases />
+        <App />
+      </GoogleMapsProvider>
     </AuthProvider>
   </React.StrictMode>,
 )
