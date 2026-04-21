@@ -5,8 +5,9 @@ import { useAuth} from './AuthContext';
 
 
 function Login({ onClose, fullPage = false }) {
-  const [view, setView] = useState('login'); 
+  const [view, setView] = useState('select'); 
   const { login } = useAuth();
+  const [userType, setUserType] = useState(null);
   const [inputUser, setInputUser] = useState('');
   const [password, setPassword] = useState('');
 
@@ -33,7 +34,8 @@ function Login({ onClose, fullPage = false }) {
       nombre: user.name?.firstname || '',
       apellidos: user.name?.lastname || '',
       direccion: `${user.address?.street || ''} ${user.address?.number || ''} ${user.address?.city || ''} ${user.address?.zipcode || ''}`.trim(),
-      telefono: user.phone || ''
+      telefono: user.phone || '',
+      role: 'cliente'
     }));
     saveUsers(mapped);
     return mapped;
@@ -41,6 +43,19 @@ function Login({ onClose, fullPage = false }) {
 
   const handleLogin = async (e) => {
     e.preventDefault();
+    if (userType === 'admin') {
+      if (inputUser === 'admin' && password === 'admin') {
+        const adminUser = { username: 'admin', role: 'admin' };
+        setMessage('Acceso exitoso como Admin');
+        login(adminUser);
+        window.alert('Autenticacion autorizada');
+        setMessage('');
+        onClose && onClose();
+      } else {
+        setMessage('Usuario o contraseña incorrectos');
+      }
+      return;
+    }
     let users = loadUsers();
     if (!users.length) {
       try {
@@ -57,8 +72,9 @@ function Login({ onClose, fullPage = false }) {
       return username === input || email === input;
     });
     if (user && user.password === password) {
+      const userWithRole = { ...user, role: 'cliente' };
       setMessage('Acceso exitoso');
-      login(user);
+      login(userWithRole);
       window.alert('Autenticacion autorizada');
       setMessage('');
       onClose && onClose();
@@ -78,7 +94,7 @@ function Login({ onClose, fullPage = false }) {
       setMessage('Usuario o email ya existe');
       return;
     }
-    const newUser = { id: Date.now(), username: createUsername, email: createEmail, password: createPassword };
+    const newUser = { id: Date.now(), username: createUsername, email: createEmail, password: createPassword, role: 'cliente' };
     users.push(newUser);
     saveUsers(users);
     setMessage('Cuenta creada correctamente');
@@ -127,6 +143,14 @@ function Login({ onClose, fullPage = false }) {
       <div className={modalClass}>
         {!fullPage && <button className="close-btn" onClick={() => onClose && onClose()}>✕</button>}
         
+        {view === 'select' && (
+          <div className="select-role">
+            <h3>Selecciona el tipo de usuario</h3>
+            <button className="btn-cliente" onClick={() => { setUserType('cliente'); setView('login'); }}>Cliente</button>
+            <button className="btn-admin" onClick={() => { setUserType('admin'); setView('login'); }}>Admin</button>
+          </div>
+        )}
+
         {view === 'login' && (
           <form className="login-form" onSubmit={handleLogin}>
             <div className="user-icon">
