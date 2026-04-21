@@ -32,6 +32,14 @@
 	margin-bottom: 30px;
 }
 
+.productos__registro-formulario {
+	background: rgba(255, 255, 255, 0.95);
+	border-radius: 12px;
+	padding: 20px;
+	box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+	margin-bottom: 30px;
+}
+
 .productos__registro-titulo {
 	margin: 0 0 15px;
 	font-size: 1.4rem;
@@ -41,7 +49,7 @@
 
 .productos__registro-form {
 	display: grid;
-	grid-template-columns: 2fr 1fr auto;
+	grid-template-columns: 1fr;
 	gap: 10px;
 	align-items: center;
 	margin-bottom: 15px;
@@ -70,9 +78,29 @@
 	transform: translateY(-2px);
 }
 
+.productos__registro-mensaje {
+	margin: 0;
+	font-size: 0.95rem;
+	color: #333;
+}
+
+.productos__tabla-contenedor {
+	margin-top: 16px;
+	overflow-x: auto;
+}
+
+.productos__tabla-titulo {
+	margin: 0 0 10px;
+	color: #333;
+	font-size: 1.05rem;
+}
+
 .productos__registro-tabla {
 	width: 100%;
 	border-collapse: collapse;
+	background: #fff;
+	border-radius: 8px;
+	overflow: hidden;
 }
 
 .productos__registro-tabla th,

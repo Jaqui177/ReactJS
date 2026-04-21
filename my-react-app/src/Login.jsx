@@ -23,8 +23,8 @@ function Login({ onClose, fullPage = false }) {
   const saveUsers = (users) => localStorage.setItem('users', JSON.stringify(users));
 
   const fetchUsersFromApi = async () => {
-    const API_URL = import.meta.env.VITE_FAKESTORE_API_KEY || 'https://fakestoreapi.com';
-    const response = await axios.get(`${API_URL}/users`);
+    const API_URL = import.meta.env.VITE_API_URL || 'https://localhost:3000/api';
+    const response = await axios.get(`${API_URL}/usuarios`);
     const mapped = response.data.map(user => ({
       id: user.id,
       username: user.username,

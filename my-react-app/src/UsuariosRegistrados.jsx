@@ -1,102 +1,121 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import axios from 'axios';
 import './UsuariosRegistrados.css';
 
+const USERS_STORAGE_KEY = 'users';
+const REGISTRADOS_STORAGE_KEY = 'usuarios_registrados';
+
+const emptyUser = {
+  id: 0,
+  nombre: '',
+  apellidos: '',
+  direccion: '',
+  telefono: '',
+  correo: '',
+  username: '',
+  password: '',
+};
+
+const mapToUserShape = (user) => ({
+  id: user.id || Date.now(),
+  nombre: user.nombre || user.name?.firstname || '',
+  apellidos: user.apellidos || user.name?.lastname || '',
+  direccion:
+    user.direccion ||
+    (user.address
+      ? `${user.address.street || ''} ${user.address.number || ''} ${user.address.city || ''} ${user.address.zipcode || ''}`.trim()
+      : ''),
+  telefono: user.telefono || user.phone || '',
+  correo: user.correo || user.email || '',
+  username: user.username || user.nombre || '',
+  password: user.password || '',
+});
+
+const toStorageShape = (user) => ({
+  id: user.id,
+  nombre: user.nombre,
+  apellidos: user.apellidos,
+  direccion: user.direccion,
+  telefono: user.telefono,
+  correo: user.correo,
+  username: user.username,
+  password: user.password,
+  email: user.correo,
+});
+
+const readStorage = (key) => {
+  try {
+    return JSON.parse(localStorage.getItem(key) || '[]');
+  } catch {
+    return [];
+  }
+};
+
+const writeStorage = (key, list) => {
+  localStorage.setItem(key, JSON.stringify(list));
+};
+
 const UsuariosRegistrados = () => {
   const [usuarios, setUsuarios] = useState([]);
+  const [usuariosRegistrados, setUsuariosRegistrados] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [usuarioSeleccionado, setUsuarioSeleccionado] = useState(null);
   const [editando, setEditando] = useState(false);
   const [usuarioEditando, setUsuarioEditando] = useState(null);
-  const [registroNombre, setRegistroNombre] = useState("");
-  const [registroPassword, setRegistroPassword] = useState("");
-  const [registroEmail, setRegistroEmail] = useState("");
-  const loadLocalUsers = () => {
-    try {
-      return JSON.parse(localStorage.getItem('users') || '[]');
-    } catch {
-      return [];
-    }
-  };
+  const [registroNombre, setRegistroNombre] = useState('');
+  const [registroPassword, setRegistroPassword] = useState('');
+  const [registroEmail, setRegistroEmail] = useState('');
 
-  const saveLocalUsers = (list) => {
-    localStorage.setItem('users', JSON.stringify(list));
-  };
-
-  const fetchUsuarios = async () => {
+  useEffect(() => {
+    const fetchUsuarios = async () => {
       try {
         setLoading(true);
-        const API_URL = import.meta.env.VITE_FAKESTORE_API_KEY || 'https://fakestoreapi.com';
-        const response = await axios.get(`${API_URL}/users`);
-        
-        // Mapear los datos de la API al formato que necesitamos
-        const usuariosFormateados = response.data.map(user => ({
-          id: user.id,
-          nombre: user.name.firstname,
-          apellidos: user.name.lastname,
-          direccion: `${user.address.street} ${user.address.number} ${user.address.city} ${user.address.zipcode}`,
-          telefono: user.phone,
-          correo: user.email,
-          username: user.username,
-          password: user.password
-        }));
-        
-        const localUsers = loadLocalUsers();
-        const merged = [...usuariosFormateados];
-        for (const local of localUsers) {
+        const API_URL = import.meta.env.VITE_API_URL || 'https://localhost:3000/api';
+        const response = await axios.get(`${API_URL}/usuarios`);
+
+        const usuariosApi = (response.data || []).map(mapToUserShape);
+        const usuariosLocales = readStorage(USERS_STORAGE_KEY).map(mapToUserShape);
+        const registradosLocales = readStorage(REGISTRADOS_STORAGE_KEY).map(mapToUserShape);
+
+        const merged = [...usuariosApi];
+        for (const localUser of usuariosLocales) {
           const exists = merged.some(
             (u) =>
-              (u.username && local.username && u.username === local.username) ||
-              (u.correo && local.email && u.correo === local.email) ||
-              (u.correo && local.correo && u.correo === local.correo)
+              (u.username && localUser.username && u.username === localUser.username) ||
+              (u.correo && localUser.correo && u.correo === localUser.correo)
           );
-          if (!exists) {
-            merged.push({
-              id: local.id || Date.now(),
-              nombre: local.nombre || local.username || '',
-              apellidos: local.apellidos || '',
-              direccion: local.direccion || '',
-              telefono: local.telefono || '',
-              correo: local.email || local.correo || '',
-              username: local.username || '',
-              password: local.password || ''
-            });
-          }
+          if (!exists) merged.push(localUser);
         }
 
         setUsuarios(merged);
-        saveLocalUsers(
-          merged.map((u) => ({
-            id: u.id,
-            username: u.username,
-            email: u.correo,
-            password: u.password,
-            nombre: u.nombre,
-            apellidos: u.apellidos,
-            direccion: u.direccion,
-            telefono: u.telefono
-          }))
-        );
-        setLoading(false);
+        setUsuariosRegistrados(registradosLocales);
+        writeStorage(USERS_STORAGE_KEY, merged.map(toStorageShape));
+        setError(null);
       } catch (err) {
         console.error('Error al cargar usuarios:', err);
         setError('Error al cargar los usuarios desde la API');
+      } finally {
         setLoading(false);
       }
     };
 
-  // Cargar usuarios desde la API
-
-  useEffect(() => {
-
-    
     fetchUsuarios();
   }, []);
 
+  const persistUsers = (next) => {
+    setUsuarios(next);
+    writeStorage(USERS_STORAGE_KEY, next.map(toStorageShape));
+  };
+
+  const persistRegisteredUsers = (next) => {
+    setUsuariosRegistrados(next);
+    writeStorage(REGISTRADOS_STORAGE_KEY, next.map(toStorageShape));
+  };
+
   const handleEditar = (id) => {
-    const usuario = usuarios.find(u => u.id === id);
-    setUsuarioEditando({...usuario});
+    const usuario = usuarios.find((u) => u.id === id);
+    if (!usuario) return;
+    setUsuarioEditando({ ...usuario });
     setEditando(true);
   };
 
@@ -106,58 +125,43 @@ const UsuariosRegistrados = () => {
   };
 
   const handleGuardar = () => {
-    const next = usuarios.map(u => 
+    if (!usuarioEditando) return;
+
+    const nextUsuarios = usuarios.map((u) => (u.id === usuarioEditando.id ? usuarioEditando : u));
+    persistUsers(nextUsuarios);
+
+    const nextRegistrados = usuariosRegistrados.map((u) =>
       u.id === usuarioEditando.id ? usuarioEditando : u
     );
-    setUsuarios(next);
-    saveLocalUsers(
-      next.map((u) => ({
-        id: u.id,
-        username: u.username,
-        email: u.correo,
-        password: u.password,
-        nombre: u.nombre,
-        apellidos: u.apellidos,
-        direccion: u.direccion,
-        telefono: u.telefono
-      }))
-    );
+    persistRegisteredUsers(nextRegistrados);
+
     setEditando(false);
     setUsuarioEditando(null);
   };
 
   const handleCambio = (campo, valor) => {
-    setUsuarioEditando({
-      ...usuarioEditando,
-      [campo]: valor
-    });
+    setUsuarioEditando((prev) => ({
+      ...(prev || emptyUser),
+      [campo]: valor,
+    }));
   };
 
   const handleEliminar = (id) => {
-    if (window.confirm('¿Estás seguro de que deseas eliminar este usuario?')) {
-      const next = usuarios.filter(usuario => usuario.id !== id);
-      setUsuarios(next);
-      saveLocalUsers(
-        next.map((u) => ({
-          id: u.id,
-          username: u.username,
-          email: u.correo,
-          password: u.password,
-          nombre: u.nombre,
-          apellidos: u.apellidos,
-          direccion: u.direccion,
-          telefono: u.telefono
-        }))
-      );
-    }
+    if (!window.confirm('¿Estás seguro de que deseas eliminar este usuario?')) return;
+
+    const nextUsuarios = usuarios.filter((u) => u.id !== id);
+    const nextRegistrados = usuariosRegistrados.filter((u) => u.id !== id);
+    persistUsers(nextUsuarios);
+    persistRegisteredUsers(nextRegistrados);
   };
 
   const handleRegistrarUsuario = () => {
     const nombre = registroNombre.trim();
-    const password = registroPassword.trim();
     const email = registroEmail.trim();
-    if (!nombre || !password || !email) return;
-    const username = nombre;
+    const password = registroPassword.trim();
+
+    if (!nombre || !email || !password) return;
+
     const nuevo = {
       id: Date.now(),
       nombre,
@@ -165,56 +169,46 @@ const UsuariosRegistrados = () => {
       direccion: '',
       telefono: '',
       correo: email,
-      username,
-      password
+      username: nombre,
+      password,
     };
-    const next = [...usuarios, nuevo];
-    setUsuarios(next);
-    saveLocalUsers(
-      next.map((u) => ({
-        id: u.id,
-        username: u.username,
-        email: u.correo,
-        password: u.password,
-        nombre: u.nombre,
-        apellidos: u.apellidos,
-        direccion: u.direccion,
-        telefono: u.telefono
-      }))
-    );
-    setRegistroNombre("");
-    setRegistroPassword("");
-    setRegistroEmail("");
+
+    const nextUsuarios = [nuevo, ...usuarios];
+    const nextRegistrados = [nuevo, ...usuariosRegistrados];
+
+    persistUsers(nextUsuarios);
+    persistRegisteredUsers(nextRegistrados);
+
+    setRegistroNombre('');
+    setRegistroEmail('');
+    setRegistroPassword('');
   };
 
-  // Mostrar mensaje de carga
   if (loading) {
     return (
       <div className="usuarios-registrados-container">
-        <h1 className="titulo-usuarios">Usuarios Registrados</h1>
+        <h1 className="titulo-usuarios">Usuarios</h1>
         <div className="loading-message">Cargando usuarios desde la API...</div>
       </div>
     );
   }
 
-  // Mostrar mensaje de error
   if (error) {
     return (
       <div className="usuarios-registrados-container">
-        <h1 className="titulo-usuarios">Usuarios Registrados</h1>
+        <h1 className="titulo-usuarios">Usuarios</h1>
         <div className="error-message">{error}</div>
       </div>
     );
   }
 
   return (
-    <div className="usuarios-registrados-container"> 
+    <div className="usuarios-registrados-container">
       <h1 className="titulo-usuarios">Registrar Usuarios</h1>
-      <p className="api-info"></p>
 
       <div className="usuarios-registro">
         <div className="usuarios-registro-contenedor">
-          <h2 className="usuarios-registro-titulo">Registrar Usuarios</h2>
+          <h2 className="usuarios-registro-titulo">Formulario de Registro</h2>
           <form
             className="usuarios-form"
             onSubmit={(e) => {
@@ -222,40 +216,67 @@ const UsuariosRegistrados = () => {
               handleRegistrarUsuario();
             }}
           >
-            <label htmlFor="registroNombre">Nombre de Usuario:</label>
+            <label htmlFor="registroNombre">Nombre de usuario</label>
             <input
               id="registroNombre"
               type="text"
-              placeholder=""
               value={registroNombre}
               onChange={(e) => setRegistroNombre(e.target.value)}
             />
 
-            <label htmlFor="registroEmail">Email:</label>
+            <label htmlFor="registroEmail">Email</label>
             <input
               id="registroEmail"
               type="email"
-              placeholder=""
               value={registroEmail}
               onChange={(e) => setRegistroEmail(e.target.value)}
             />
 
-            <label htmlFor="registroPassword">Password:</label>
+            <label htmlFor="registroPassword">Password</label>
             <input
               id="registroPassword"
               type="password"
-              placeholder=""
               value={registroPassword}
               onChange={(e) => setRegistroPassword(e.target.value)}
             />
 
-            <button type="submit" className="usuarios-registro-btn usuarios-registro-btn--green">Registrar</button>
+            <button type="submit" className="usuarios-registro-btn usuarios-registro-btn--green">
+              Registrar
+            </button>
           </form>
+        </div>
 
-          
+        <div className="tabla-container tabla-container--registro">
+          <h2 className="titulo-usuarios-registrados">Tabla de usuarios que registras</h2>
+          <table className="tabla-usuarios">
+            <thead>
+              <tr>
+                <th>Nombre</th>
+                <th>Email</th>
+                <th>Username</th>
+                <th>Password</th>
+              </tr>
+            </thead>
+            <tbody>
+              {usuariosRegistrados.length === 0 ? (
+                <tr>
+                  <td colSpan={4}>Sin usuarios registrados todavía.</td>
+                </tr>
+              ) : (
+                usuariosRegistrados.map((usuario) => (
+                  <tr key={`reg-${usuario.id}`}>
+                    <td>{usuario.nombre}</td>
+                    <td>{usuario.correo}</td>
+                    <td>{usuario.username}</td>
+                    <td>{usuario.password}</td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
-      
-      {/* Modal de edición */}
+
       {editando && usuarioEditando && (
         <div className="modal-overlay">
           <div className="modal-edicion">
@@ -278,7 +299,7 @@ const UsuariosRegistrados = () => {
                 />
               </div>
               <div className="form-group">
-                <label>Dirección:</label>
+                <label>Direccion:</label>
                 <input
                   type="text"
                   value={usuarioEditando.direccion}
@@ -286,7 +307,7 @@ const UsuariosRegistrados = () => {
                 />
               </div>
               <div className="form-group">
-                <label>Teléfono:</label>
+                <label>Telefono:</label>
                 <input
                   type="text"
                   value={usuarioEditando.telefono}
@@ -331,14 +352,14 @@ const UsuariosRegistrados = () => {
       )}
 
       <div className="tabla-container">
-        <h2 className="titulo-usuarios-registrados">Usuarios Registrados</h2>
+        <h2 className="titulo-usuarios-registrados">Tabla general de usuarios</h2>
         <table className="tabla-usuarios">
           <thead>
             <tr>
               <th>Nombre</th>
               <th>Apellidos</th>
-              <th>Dirección</th>
-              <th>Teléfono</th>
+              <th>Direccion</th>
+              <th>Telefono</th>
               <th>Correo</th>
               <th>Username</th>
               <th>Password</th>
@@ -347,38 +368,37 @@ const UsuariosRegistrados = () => {
             </tr>
           </thead>
           <tbody>
-            {usuarios.map((usuario) => (
-              <tr key={usuario.id}>
-                <td>{usuario.nombre}</td>
-                <td>{usuario.apellidos}</td>
-                <td>{usuario.direccion}</td>
-                <td>{usuario.telefono}</td>
-                <td>{usuario.correo}</td>
-                <td>{usuario.username}</td>
-                <td>{usuario.password}</td>
-                <td>
-                  <button 
-                    className="btn-editar"
-                    onClick={() => handleEditar(usuario.id)}
-                  >
-                    Editar
-                  </button>
-                </td>
-                <td>
-                  <button 
-                    className="btn-eliminar"
-                    onClick={() => handleEliminar(usuario.id)}
-                  >
-                    Eliminar
-                  </button>
-                </td>
+            {usuarios.length === 0 ? (
+              <tr>
+                <td colSpan={9}>No hay usuarios disponibles.</td>
               </tr>
-            ))}
+            ) : (
+              usuarios.map((usuario) => (
+                <tr key={usuario.id}>
+                  <td>{usuario.nombre}</td>
+                  <td>{usuario.apellidos}</td>
+                  <td>{usuario.direccion}</td>
+                  <td>{usuario.telefono}</td>
+                  <td>{usuario.correo}</td>
+                  <td>{usuario.username}</td>
+                  <td>{usuario.password}</td>
+                  <td>
+                    <button className="btn-editar" onClick={() => handleEditar(usuario.id)}>
+                      Editar
+                    </button>
+                  </td>
+                  <td>
+                    <button className="btn-eliminar" onClick={() => handleEliminar(usuario.id)}>
+                      Eliminar
+                    </button>
+                  </td>
+                </tr>
+              ))
+            )}
           </tbody>
         </table>
       </div>
     </div>
-  </div>
   );
 };
 
