@@ -1,233 +1,262 @@
-import { useEffect, useState } from 'react';
-import { useAuth } from './AuthContext';
+import { useMemo, useState, useEffect } from 'react';
 import api from './Services/api';
-import './Productos.css';
+import './RegistrarProductos.css';
 
+const PRODUCTOS_STORAGE_KEY = 'productos_registrados';
+const CARRITO_STORAGE_KEY = 'carrito_items';
 
-function Productos() {
-	const { isLoggedIn } = useAuth();
-	const [productos, setProductos] = useState([]);
-	const [cargando, setCargando] = useState(true);
-	const [error, setError] = useState("");
-	const [cantidades, setCantidades] = useState({});
-	const [registroNombre, setRegistroNombre] = useState("");
-	const [registroPrecio, setRegistroPrecio] = useState("");
-	const [registroDescripcion, setRegistroDescripcion] = useState("");
-	const [registros, setRegistros] = useState([]);
+const formInicial = {
+  nombre: '',
+  precio: '',
+  categoria: '',
+  imagen: '',
+  descripcion: '',
+  stock: '',
+};
 
-	// Estado para formulario de registro de productos (solo formulario)
-	const [productoForm, setProductoForm] = useState({
-		nombre: '',
-		precio: '',
-		categoria: '',
-		imagen: '',
-		descripcion: '',
-		stock: '',
-	});
-	const [productoMensaje, setProductoMensaje] = useState('');
+const leerStorage = (key) => {
+  try {
+    return JSON.parse(localStorage.getItem(key) || '[]');
+  } catch {
+    return [];
+  }
+};
 
-	const handleAgregar = (id) => {
-		setCantidades((prev) => ({
-			...prev,
-			[id]: (prev[id] || 0) + 1,
-		}));
-	};
+const guardarStorage = (key, value) => {
+  localStorage.setItem(key, JSON.stringify(value));
+};
 
-	const handleEliminar = (id) => {
-		setCantidades((prev) => {
-			const actual = prev[id] || 0;
-			if (actual <= 0) return prev;
-			return {
-				...prev,
-				[id]: actual - 1,
-			};
-		});
-	};
+function RegistrarProductos() {
+  const [formulario, setFormulario] = useState(formInicial);
+  const [productos, setProductos] = useState([]);
+  const [error, setError] = useState('');
+  const [exito, setExito] = useState('');
 
-	const handleEditar = (id) => {
-		const producto = productos.find((p) => p.id === id);
-		if (!producto) return;
-		const nuevoTitulo = window.prompt('Nuevo nombre del producto:', producto.title || '');
-		if (nuevoTitulo === null) return;
-		const nuevoPrecioRaw = window.prompt('Nuevo precio:', String(producto.price ?? ''));
-		if (nuevoPrecioRaw === null) return;
-		const nuevoPrecio = Number(nuevoPrecioRaw);
-		if (!nuevoTitulo.trim() || Number.isNaN(nuevoPrecio) || nuevoPrecio <= 0) {
-			return;
-		}
-		setProductos((prev) =>
-			prev.map((p) =>
-				p.id === id ? { ...p, title: nuevoTitulo.trim(), price: nuevoPrecio } : p
-			)
-		);
-	};
+  const totalProductos = useMemo(() => productos.length, [productos]);
 
-	const handleRegistrarProducto = () => {
-		const nombre = registroNombre.trim();
-		const precio = registroPrecio.trim();
-		const descripcion = registroDescripcion.trim();
-		if (!nombre || !precio) return;
-		setRegistros((prev) => [
-			...prev,
-			{ id: Date.now(), nombre, precio, descripcion },
-		]);
-		setRegistroNombre("");
-		setRegistroPrecio("");
-		setRegistroDescripcion("");
-	};
+  useEffect(() => {
+    const cargarProductos = async () => {
+      const locales = leerStorage(PRODUCTOS_STORAGE_KEY);
+      try {
+        const response = await api.get('/productos');
+        const apiProductos = Array.isArray(response.data)
+          ? response.data.map((p) => ({
+              id: p.id || Date.now(),
+              nombre: p.title || p.nombre || '',
+              precio: Number(p.price || p.precio || 0),
+              categoria: p.category || p.categoria || 'Sin categoria',
+              imagen: p.image || p.imagen || '',
+              descripcion: p.description || p.descripcion || '',
+              stock: Number(p.stock ?? 0),
+            }))
+          : [];
 
-	useEffect(() => {
-		const obtenerProductos = async () => {
-			setCargando(true);
-			try {
-				const response = await api.get('/products');
-				setProductos(response.data);
-				setError("");
-			} catch (error) {
-				console.error('Error al obtener productos:', error);
-				setError("No se pudieron cargar los productos.");
-			} finally {
-				setCargando(false);
-			}
-		};
+        const merged = [...apiProductos];
+        for (const local of locales) {
+          const exists = merged.some(
+            (p) =>
+              (p.id && local.id && p.id === local.id) ||
+              (p.nombre === local.nombre && p.categoria === local.categoria)
+          );
+          if (!exists) merged.push(local);
+        }
+        setProductos(merged);
+        guardarStorage(PRODUCTOS_STORAGE_KEY, merged);
+      } catch {
+        setProductos(locales);
+      }
+    };
 
-		obtenerProductos();
-	}, []);
-	if (cargando) {
-		return <p>Cargando productos...</p>;
-	}
+    cargarProductos();
+  }, []);
 
-	if (error) {
-		return <p className="productos-error">{error}</p>;
-	}
+  const handleChange = (event) => {
+    const { name, value } = event.target;
+    setFormulario((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
 
-	
-	return (
-		<div className="productos">
-			<div className="productos__contenedor">
-				<h1 className="productos__titulo">Catálogo de Productos</h1>
-				<p className="productos__descripcion">
-					Descubre nuestra selección de productos de alta calidad
-				</p>
+  const validarFormulario = () => {
+    if (!formulario.nombre.trim()) return 'Ingresa el nombre del producto.';
+    if (!formulario.precio || Number(formulario.precio) <= 0) return 'Ingresa un precio valido.';
+    if (!formulario.categoria.trim()) return 'Ingresa la categoria del producto.';
+    if (!formulario.stock || Number(formulario.stock) < 0) return 'Ingresa un stock valido.';
+    return '';
+  };
 
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    const mensajeError = validarFormulario();
+    if (mensajeError) {
+      setError(mensajeError);
+      setExito('');
+      return;
+    }
 
-				{/* Formulario de registro de productos (solo el formulario) */}
-				{isLoggedIn && (
-							<div className="productos__registro-formulario">
-								<h2 className="productos__registro-titulo">Registrar producto</h2>
-								<form
-									className="productos__registro-form"
-									onSubmit={(e) => {
-										e.preventDefault();
-										const nombre = productoForm.nombre.trim();
-										const precio = Number(productoForm.precio);
-										const categoria = productoForm.categoria.trim();
-										const imagen = productoForm.imagen.trim();
-										const descripcion = productoForm.descripcion.trim();
-										const stock = Number(productoForm.stock);
-										if (!nombre || !precio || precio <= 0 || !categoria || isNaN(stock) || stock < 0) {
-											setProductoMensaje('Completa los campos requeridos con valores validos.');
-											return;
-										}
-										const nuevo = {
-											id: Date.now(),
-											title: nombre,
-											price: precio,
-											image: imagen || '',
-											description: descripcion,
-											category: categoria,
-											stock,
-										};
-										setProductos((prev) => [nuevo, ...prev]);
-										setProductoForm({ nombre: '', precio: '', categoria: '', imagen: '', descripcion: '', stock: '' });
-										setProductoMensaje('Producto registrado correctamente.');
-									}}
-								>
-									<input
-										type="text"
-										placeholder="Nombre del producto"
-										value={productoForm.nombre}
-										onChange={(e) => setProductoForm((p) => ({ ...p, nombre: e.target.value }))}
-									/>
-									<input
-										type="number"
-										placeholder="Precio"
-										value={productoForm.precio}
-										onChange={(e) => setProductoForm((p) => ({ ...p, precio: e.target.value }))}
-									/>
-									<input
-										type="number"
-										placeholder="Stock"
-										value={productoForm.stock}
-										onChange={(e) => setProductoForm((p) => ({ ...p, stock: e.target.value }))}
-									/>
-									<input
-										type="text"
-										placeholder="Categoria"
-										value={productoForm.categoria}
-										onChange={(e) => setProductoForm((p) => ({ ...p, categoria: e.target.value }))}
-									/>
-									<input
-										type="url"
-										placeholder="Imagen (URL)"
-										value={productoForm.imagen}
-										onChange={(e) => setProductoForm((p) => ({ ...p, imagen: e.target.value }))}
-									/>
-									<textarea
-										placeholder="Descripcion"
-										value={productoForm.descripcion}
-										onChange={(e) => setProductoForm((p) => ({ ...p, descripcion: e.target.value }))}
-									/>
-									<button type="submit" className="productos__registro-btn">Registrar producto</button>
-									{productoMensaje && <p className="productos__registro-mensaje">{productoMensaje}</p>}
-								</form>
-							</div>
-						)}
+    const nuevoProducto = {
+      id: Date.now(),
+      nombre: formulario.nombre.trim(),
+      precio: Number(formulario.precio),
+      categoria: formulario.categoria.trim(),
+      imagen: formulario.imagen.trim(),
+      descripcion: formulario.descripcion.trim(),
+      stock: Number(formulario.stock),
+    };
 
-				<div className="productos__grid">
-					{productos.map((producto) => (
-						<div key={producto.id} className="productos__card">
-							<img src={producto.image} alt={producto.title} />
-							<h3>{producto.title}</h3>
-							<p className="productos__precio">${producto.price}</p>
-							<div className="productos__acciones">
-									{isLoggedIn && (
-										<>
-											<button
-												className="productos__btn productos__btn--eliminar"
-												onClick={() => handleEliminar(producto.id)}
-												aria-label={`Eliminar ${producto.title}`}
-											>
-											    Eliminar
-											</button>
+    const next = [nuevoProducto, ...productos];
+    setProductos(next);
+    guardarStorage(PRODUCTOS_STORAGE_KEY, next);
 
-										    <button
-												className="productos__btn productos__btn--editar"
-												onClick={() => handleEditar(producto.id)}
-												aria-label={`Editar ${producto.title}`}
-											>
-												Editar
+    try {
+      await api.post('/productos', {
+        title: nuevoProducto.nombre,
+        price: nuevoProducto.precio,
+        category: nuevoProducto.categoria,
+        image: nuevoProducto.imagen,
+        description: nuevoProducto.descripcion,
+        stock: nuevoProducto.stock,
+      });
+    } catch {
+      // Se mantiene guardado en local aunque la API falle
+    }
 
-											</button>
-										</>
-									)}
-									<span className="productos__cantidad">{cantidades[producto.id] || 0}</span>
-									<button
-										className="productos__btn productos__btn--agregar"
-										onClick={() => handleAgregar(producto.id)}
-										aria-label={`Agregar ${producto.title}`}
-									>
-										Agregar
-									</button>
-								</div>
+    setFormulario(formInicial);
+    setError('');
+    setExito('Producto registrado correctamente.');
+  };
 
-						</div>
-					))}
-				</div>
-			</div>
-		</div>
-	);
+  const handleLimpiar = () => {
+    setFormulario(formInicial);
+    setError('');
+    setExito('');
+  };
+
+  const handleEliminar = (id) => {
+    const next = productos.filter((producto) => producto.id !== id);
+    setProductos(next);
+    guardarStorage(PRODUCTOS_STORAGE_KEY, next);
+  };
+
+  const handleAgregarAlCarrito = (producto) => {
+    const carritoActual = leerStorage(CARRITO_STORAGE_KEY);
+    const existente = carritoActual.find((item) => item.id === producto.id);
+    let next;
+
+    if (existente) {
+      next = carritoActual.map((item) =>
+        item.id === producto.id ? { ...item, quantity: item.quantity + 1 } : item
+      );
+    } else {
+      next = [
+        ...carritoActual,
+        {
+          id: producto.id,
+          title: producto.nombre,
+          price: producto.precio,
+          category: producto.categoria,
+          quantity: 1,
+        },
+      ];
+    }
+
+    guardarStorage(CARRITO_STORAGE_KEY, next);
+  };
+
+  return (
+    <section className="registrar-productos">
+      <div className="registrar-productos__contenedor">
+        <div className="registrar-productos__encabezado">
+          <h2>Registrar Productos</h2>
+          <p>Agrega nuevos productos al catalogo de forma rapida y sencilla.</p>
+        </div>
+
+        <div className="registrar-productos__contenido">
+          <form className="registrar-productos__formulario" onSubmit={handleSubmit}>
+            <div className="registrar-productos__grupo">
+              <label htmlFor="nombre">Nombre del producto</label>
+              <input type="text" id="nombre" name="nombre" value={formulario.nombre} onChange={handleChange} required />
+            </div>
+            <div className="registrar-productos__fila">
+              <div className="registrar-productos__grupo">
+                <label htmlFor="precio">Precio</label>
+                <input type="number" id="precio" name="precio" value={formulario.precio} onChange={handleChange} min="0" required />
+              </div>
+              <div className="registrar-productos__grupo">
+                <label htmlFor="stock">Stock</label>
+                <input type="number" id="stock" name="stock" value={formulario.stock} onChange={handleChange} min="0" required />
+              </div>
+            </div>
+            <div className="registrar-productos__grupo">
+              <label htmlFor="categoria">Categoria</label>
+              <input type="text" id="categoria" name="categoria" value={formulario.categoria} onChange={handleChange} required />
+            </div>
+            <div className="registrar-productos__grupo">
+              <label htmlFor="imagen">Imagen (URL)</label>
+              <input type="url" id="imagen" name="imagen" value={formulario.imagen} onChange={handleChange} />
+            </div>
+            <div className="registrar-productos__grupo">
+              <label htmlFor="descripcion">Descripcion</label>
+              <textarea id="descripcion" name="descripcion" rows="4" value={formulario.descripcion} onChange={handleChange}></textarea>
+            </div>
+
+            {error && <p className="registrar-productos__mensaje registrar-productos__mensaje--error">{error}</p>}
+            {exito && <p className="registrar-productos__mensaje registrar-productos__mensaje--exito">{exito}</p>}
+
+            <div className="registrar-productos__acciones">
+              <button type="submit" className="registrar-productos__boton registrar-productos__boton--primario">
+                Registrar producto
+              </button>
+              <button type="button" className="registrar-productos__boton" onClick={handleLimpiar}>
+                Limpiar
+              </button>
+            </div>
+          </form>
+
+          <div className="registrar-productos__lista">
+            <div className="registrar-productos__resumen">
+              <h3>Productos registrados</h3>
+              <span>{totalProductos} productos</span>
+            </div>
+
+            {productos.length === 0 ? (
+              <div className="registrar-productos__vacio">
+                <p>Aun no hay productos registrados.</p>
+              </div>
+            ) : (
+              <div className="registrar-productos__grid">
+                {productos.map((producto) => (
+                  <div key={producto.id} className="registrar-productos__card">
+                    <div className="registrar-productos__card-imagen">
+                      {producto.imagen ? <img src={producto.imagen} alt={producto.nombre} /> : <span>Sin imagen</span>}
+                    </div>
+                    <div className="registrar-productos__card-info">
+                      <h4>{producto.nombre}</h4>
+                      <p className="registrar-productos__card-categoria">{producto.categoria}</p>
+                      <p className="registrar-productos__card-descripcion">{producto.descripcion || 'Sin descripcion.'}</p>
+                      <div className="registrar-productos__card-detalles">
+                        <span>${producto.precio.toFixed(2)}</span>
+                        <span>Stock: {producto.stock}</span>
+                      </div>
+                      <div className="registrar-productos__acciones">
+                        <button type="button" className="registrar-productos__eliminar" onClick={() => handleEliminar(producto.id)}>
+                          Eliminar
+                        </button>
+                        <button type="button" className="registrar-productos__boton registrar-productos__boton--primario" onClick={() => handleAgregarAlCarrito(producto)}>
+                          Agregar al carrito
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    </section>
+  );
 }
 
-
-export default Productos;
+export default RegistrarProductos;

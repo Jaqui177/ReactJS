@@ -70,6 +70,17 @@
   overflow: hidden;
 }
 
+.categoria__productos {
+  margin: 6px 0 0;
+  padding-left: 18px;
+}
+
+.categoria__producto-item {
+  color: #1f2937;
+  font-size: 13px;
+  margin: 4px 0;
+}
+
 @media (max-width: 640px) {
   .categorias__titulo {
     font-size: 26px;
