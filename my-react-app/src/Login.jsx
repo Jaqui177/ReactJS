@@ -1,324 +1,296 @@
-import React, { useState } from 'react';
+import { useState, useEffect } from 'react';
 import axios from 'axios';
 import './Login.css';
-import { useAuth} from './AuthContext';
 
-
-function Login({ onClose, fullPage = false }) {
-  const [view, setView] = useState('select'); 
-  const { login } = useAuth();
-  const [userType, setUserType] = useState(null);
-  const [inputUser, setInputUser] = useState('');
+const Login = ({ onClose, fullPage = false }) => {
+  const [page, setPage] = useState('main'); // main, login, register
+  const [userType, setUserType] = useState(''); // cliente, admin
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-
-  const [createUsername, setCreateUsername] = useState('');
-  const [createEmail, setCreateEmail] = useState('');
-  const [createPassword, setCreatePassword] = useState('');
-
-  const [currentPassword, setCurrentPassword] = useState('');
-  const [newPassword, setNewPassword] = useState('');
-
+  const [nombre, setNombre] = useState('');
+  const [usuarios, setUsuarios] = useState([]);
   const [message, setMessage] = useState('');
- 
-  const loadUsers = () => JSON.parse(localStorage.getItem('users') || '[]');
-  const saveUsers = (users) => localStorage.setItem('users', JSON.stringify(users));
+  const [messageType, setMessageType] = useState(''); // success, error
+  const [loading, setLoading] = useState(false);
 
-  const fetchUsersFromApi = async () => {
-    const API_URL = import.meta.env.VITE_API_URL || 'https://localhost:3000/api';
-    const response = await axios.get(`${API_URL}/usuarios`);
-    const mapped = response.data.map(user => ({
-      id: user.id,
-      username: user.username,
-      email: user.email,
-      password: user.password,
-      nombre: user.name?.firstname || '',
-      apellidos: user.name?.lastname || '',
-      direccion: `${user.address?.street || ''} ${user.address?.number || ''} ${user.address?.city || ''} ${user.address?.zipcode || ''}`.trim(),
-      telefono: user.phone || '',
-      role: 'cliente'
-    }));
-    saveUsers(mapped);
-    return mapped;
+  const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api';
+
+  const normalizeUsuario = (usuario) => {
+    const email = (usuario.email || usuario.correo || usuario.mail || '').toString().trim().toLowerCase();
+    const password = usuario.password || usuario.password_hash || usuario.pass || usuario.clave || '';
+    const rawRole = usuario.tipo ?? usuario.rol ?? usuario.role ?? usuario.role_id ?? usuario.rol_id ?? '';
+    const tipo = (() => {
+      const value = rawRole?.toString().trim().toLowerCase();
+      if (value === '1' || value === 'admin' || value === 'administrador') return 'admin';
+      if (value === '2' || value === 'cliente' || value === 'user' || value === 'customer') return 'cliente';
+      return value;
+    })();
+
+    return {
+      ...usuario,
+      email,
+      password,
+      nombre: usuario.nombre || usuario.name || usuario.nombre_usuario || '',
+      tipo,
+    };
+  };
+
+  // Cargar usuarios al montar
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const response = await axios.get(`${API_URL}/usuarios`);
+        const normalized = (Array.isArray(response.data) ? response.data : []).map(normalizeUsuario);
+        setUsuarios(normalized);
+        localStorage.setItem('usuariosCache', JSON.stringify(normalized));
+        console.log('Usuarios cargados desde API:', normalized);
+      } catch (error) {
+        console.error('Error al obtener usuarios:', error.message);
+        // Si falla, intenta cargar del cache local
+        const cache = localStorage.getItem('usuariosCache');
+        if (cache) {
+          const cached = JSON.parse(cache);
+          setUsuarios(Array.isArray(cached) ? cached.map(normalizeUsuario) : []);
+          console.log('Usuarios cargados desde cache local');
+        } else {
+          setUsuarios([]);
+        }
+      }
+    };
+    fetchUsers();
+  }, [API_URL]);
+
+  const handleMainMenu = () => {
+    setPage('main');
+    setMessage('');
+    setEmail('');
+    setPassword('');
+    setNombre('');
+    setUserType('');
+  };
+
+  const handleLoginClick = (type) => {
+    setUserType(type);
+    setPage('login');
+    setMessage('');
+  };
+
+  const handleRegisterClick = (type) => {
+    setUserType(type);
+    setPage('register');
+    setMessage('');
   };
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    if (userType === 'admin') {
-      if (inputUser === 'admin' && password === 'admin') {
-        const adminUser = { username: 'admin', role: 'admin' };
-        setMessage('Acceso exitoso como Admin');
-        login(adminUser);
-        window.alert('Autenticacion autorizada');
-        setMessage('');
-        onClose && onClose();
-      } else {
-        setMessage('Usuario o contraseña incorrectos');
-      }
+    setMessage('');
+
+    if (!email.trim() || !password.trim()) {
+      setMessage('Completa email y contraseña');
+      setMessageType('error');
       return;
     }
-    let users = loadUsers();
-    if (!users.length) {
-      try {
-        users = await fetchUsersFromApi();
-      } catch (err) {
-        setMessage('No se pudieron cargar los usuarios');
-        return;
-      }
+
+    if (usuarios.length === 0) {
+      setMessage('No hay usuarios cargados. Recarga la página.');
+      setMessageType('error');
+      return;
     }
-    const input = inputUser.trim().toLowerCase();
-    const user = users.find(u => {
-      const username = (u.username || "").toLowerCase();
-      const email = (u.email || u.correo || "").toLowerCase();
-      return username === input || email === input;
-    });
-    if (user && user.password === password) {
-      const userWithRole = { ...user, role: 'cliente' };
-      setMessage('Acceso exitoso');
-      login(userWithRole);
-      window.alert('Autenticacion autorizada');
-      setMessage('');
-      onClose && onClose();
+
+    const usuarioEncontrado = usuarios.find(
+      (usuario) => (usuario.email || '').toLowerCase() === email.toLowerCase() && 
+                    usuario.password === password &&
+                    usuario.tipo === userType
+    );
+
+    if (usuarioEncontrado) {
+      setMessage(`¡Bienvenido, ${usuarioEncontrado.nombre}!`);
+      setMessageType('success');
+      localStorage.setItem('currentUser', JSON.stringify(usuarioEncontrado));
+      setTimeout(() => {
+        handleMainMenu();
+        if (onClose) onClose();
+      }, 1000);
     } else {
-      setMessage('Usuario o contrase?a incorrectos');
+      setMessage('Email, contraseña o tipo de usuario incorrecto');
+      setMessageType('error');
     }
   };
 
-  const handleCreate = (e) => {
+  const handleRegister = async (e) => {
     e.preventDefault();
-    if (!createUsername || !createEmail || !createPassword) {
+    setMessage('');
+
+    if (!nombre.trim() || !email.trim() || !password.trim()) {
       setMessage('Completa todos los campos');
+      setMessageType('error');
       return;
     }
-    const users = loadUsers();
-    if (users.some(u => u.username === createUsername || u.email === createEmail)) {
-      setMessage('Usuario o email ya existe');
-      return;
-    }
-    const newUser = { id: Date.now(), username: createUsername, email: createEmail, password: createPassword, role: 'cliente' };
-    users.push(newUser);
-    saveUsers(users);
-    setMessage('Cuenta creada correctamente');
-    setTimeout(() => {
-      setMessage('');
-      setView('login');
-      setCreateUsername('');
-      setCreateEmail('');
-      setCreatePassword('');
-    }, 900);
-  };
 
-  const handleChange = (e) => {
-    e.preventDefault();
-    const users = loadUsers();
-    const user = users.find(u => u.username === inputUser || u.email === inputUser);
-    if (!user) {
-      setMessage('Usuario no encontrado');
-      return;
-    }
-    if (user.password !== currentPassword) {
-      setMessage('Contraseña actual incorrecta');
-      return;
-    }
-    if (!newPassword) {
-      setMessage('Nueva contraseña vacía');
-      return;
-    }
-    user.password = newPassword;
-    saveUsers(users);
-    setMessage('Contraseña actualizada');
-    setTimeout(() => {
-      setMessage('');
-      setView('login');
-      setInputUser('');
-      setCurrentPassword('');
-      setNewPassword('');
-    }, 900);
-  };
+    const usuarioExistente = usuarios.find(
+      (usuario) => (usuario.email || '').toLowerCase() === email.toLowerCase()
+    );
 
-  const containerClass = fullPage ? 'login-page' : 'login-overlay';
-  const modalClass = fullPage ? 'login-modal login-modal--page' : 'login-modal';
+    if (usuarioExistente) {
+      setMessage('Este email ya está registrado');
+      setMessageType('error');
+      return;
+    }
+
+    try {
+      setLoading(true);
+      const nuevoUsuario = {
+        nombre: nombre.trim(),
+        email: email.toLowerCase(),
+        password: password,
+        tipo: userType,
+      };
+
+      try {
+        // Intenta guardar en la API
+        const response = await axios.post(`${API_URL}/usuarios`, nuevoUsuario);
+        const normalizedResponse = normalizeUsuario(response.data);
+        setMessage('¡Cuenta creada exitosamente!');
+        setMessageType('success');
+        localStorage.setItem('currentUser', JSON.stringify(normalizedResponse));
+        
+        // Actualiza el cache
+        const newUsers = [...usuarios, normalizedResponse];
+        localStorage.setItem('usuariosCache', JSON.stringify(newUsers));
+      } catch (apiError) {
+        console.warn('No se pudo conectar a la API, guardando localmente:', apiError.message);
+        
+        // Si falla la API, guarda localmente
+        const nuevoUsuarioLocal = normalizeUsuario({
+          id: Date.now(),
+          nombre: nombre.trim(),
+          email: email.toLowerCase(),
+          password: password,
+          tipo: userType,
+        });
+        
+        const newUsers = [...usuarios, nuevoUsuarioLocal];
+        setUsuarios(newUsers);
+        localStorage.setItem('usuariosCache', JSON.stringify(newUsers));
+        localStorage.setItem('currentUser', JSON.stringify(nuevoUsuarioLocal));
+        
+        setMessage('¡Cuenta creada exitosamente! (Almacenada localmente)');
+        setMessageType('success');
+      }
+      
+      setTimeout(() => {
+        handleMainMenu();
+        if (onClose) onClose();
+      }, 1500);
+    } catch (error) {
+      console.error('Error al registrar usuario:', error);
+      setMessage('Error al crear la cuenta');
+      setMessageType('error');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
-    <div className={containerClass}>
-      <div className={modalClass}>
-        {!fullPage && <button className="close-btn" onClick={() => onClose && onClose()}>✕</button>}
-        
-        {view === 'select' && (
+    <div className={fullPage ? 'login-page' : 'login-overlay'}>
+      <div className={`login-modal ${fullPage ? 'login-modal--page' : ''}`}>
+        <button className="close-btn" onClick={() => onClose && onClose()}>X</button>
+
+        {/* PÁGINA PRINCIPAL */}
+        {page === 'main' && (
           <div className="select-role">
-            <h3>Selecciona el tipo de usuario</h3>
-            <button className="btn-cliente" onClick={() => { setUserType('cliente'); setView('login'); }}>Cliente</button>
-            <button className="btn-admin" onClick={() => { setUserType('admin'); setView('login'); }}>Admin</button>
+            <h2>¿Qué deseas hacer?</h2>
+            <button className="btn-signin" onClick={() => handleLoginClick('cliente')}>
+              Iniciar Sesión - Cliente
+            </button>
+            <button className="btn-signin" onClick={() => handleLoginClick('admin')}>
+              Iniciar Sesión - Admin
+            </button>
+            <button className="btn-create-account" onClick={() => handleRegisterClick('cliente')}>
+              Crear Cuenta - Cliente
+            </button>
+            <button className="btn-create-account" onClick={() => handleRegisterClick('admin')}>
+              Crear Cuenta - Admin
+            </button>
           </div>
         )}
 
-        {view === 'login' && (
+        {/* PÁGINA DE LOGIN */}
+        {page === 'login' && (
           <form className="login-form" onSubmit={handleLogin}>
-            <div className="user-icon">
-              <svg width="80" height="80" viewBox="0 0 80 80" fill="none">
-                <circle cx="40" cy="40" r="40" fill="white" opacity="0.9"/>
-                <circle cx="40" cy="30" r="12" fill="#4DB8C4"/>
-                <path d="M20 65C20 55 28 48 40 48C52 48 60 55 60 65" fill="#4DB8C4"/>
-              </svg>
-            </div>
-
+            <h2>Iniciar Sesión ({userType})</h2>
             <div className="input-group">
-              <span className="input-icon">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                  <path d="M12 12C14.21 12 16 10.21 16 8C16 5.79 14.21 4 12 4C9.79 4 8 5.79 8 8C8 10.21 9.79 12 12 12ZM12 14C9.33 14 4 15.34 4 18V20H20V18C20 15.34 14.67 14 12 14Z" fill="white"/>
-                </svg>
-              </span>
-              <input 
-                type="text" 
-                placeholder="Username" 
-                value={inputUser} 
-                onChange={(e) => setInputUser(e.target.value)} 
+              <input
+                type="email"
+                placeholder="correo@ejemplo.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
               />
             </div>
-
             <div className="input-group">
-              <span className="input-icon">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                  <path d="M18 8H17V6C17 3.24 14.76 1 12 1C9.24 1 7 3.24 7 6V8H6C4.9 8 4 8.9 4 10V20C4 21.1 4.9 22 6 22H18C19.1 22 20 21.1 20 20V10C20 8.9 19.1 8 18 8ZM12 17C10.9 17 10 16.1 10 15C10 13.9 10.9 13 12 13C13.1 13 14 13.9 14 15C14 16.1 13.1 17 12 17ZM15.1 8H8.9V6C8.9 4.29 10.29 2.9 12 2.9C13.71 2.9 15.1 4.29 15.1 6V8Z" fill="white"/>
-                </svg>
-              </span>
-              <input 
-                type="password" 
-                placeholder="Password" 
-                value={password} 
-                onChange={(e) => setPassword(e.target.value)} 
+              <input
+                type="password"
+                placeholder="Contraseña"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
               />
             </div>
-
-            
-
-            {message && <div className="login-message">{message}</div>}
-
-            <button type="submit" className="btn-signin">Sign In</button>
-
-            <div className="create-account-section">
-              <p>Not a member?</p>
-              <button type="button" className="btn-create-account" onClick={() => setView('create')}>
-                Crear cuenta
-              </button>
-            </div>
+            <button type="submit" className="btn-signin" disabled={loading}>
+              {loading ? 'Ingresando...' : 'Ingresar'}
+            </button>
+            <button type="button" className="btn-back" onClick={handleMainMenu}>
+              Volver
+            </button>
           </form>
         )}
 
-        {view === 'create' && (
-          <form className="login-form" onSubmit={handleCreate}>
-            <h3 className="form-title">Crear cuenta</h3>
-            
+        {/* PÁGINA DE REGISTRO */}
+        {page === 'register' && (
+          <form className="login-form" onSubmit={handleRegister}>
+            <h2>Crear Cuenta ({userType})</h2>
             <div className="input-group">
-              <span className="input-icon">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                  <path d="M12 12C14.21 12 16 10.21 16 8C16 5.79 14.21 4 12 4C9.79 4 8 5.79 8 8C8 10.21 9.79 12 12 12ZM12 14C9.33 14 4 15.34 4 18V20H20V18C20 15.34 14.67 14 12 14Z" fill="white"/>
-                </svg>
-              </span>
-              <input 
-                type="text" 
-                placeholder="Username" 
-                value={createUsername} 
-                onChange={(e) => setCreateUsername(e.target.value)} 
+              <input
+                type="text"
+                placeholder="Tu nombre"
+                value={nombre}
+                onChange={(e) => setNombre(e.target.value)}
+                required
               />
             </div>
-
             <div className="input-group">
-              <span className="input-icon">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                  <path d="M20 4H4C2.9 4 2.01 4.9 2.01 6L2 18C2 19.1 2.9 20 4 20H20C21.1 20 22 19.1 22 18V6C22 4.9 21.1 4 20 4ZM20 8L12 13L4 8V6L12 11L20 6V8Z" fill="white"/>
-                </svg>
-              </span>
-              <input 
-                type="email" 
-                placeholder="Email" 
-                value={createEmail} 
-                onChange={(e) => setCreateEmail(e.target.value)} 
+              <input
+                type="email"
+                placeholder="correo@ejemplo.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
               />
             </div>
-
             <div className="input-group">
-              <span className="input-icon">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                  <path d="M18 8H17V6C17 3.24 14.76 1 12 1C9.24 1 7 3.24 7 6V8H6C4.9 8 4 8.9 4 10V20C4 21.1 4.9 22 6 22H18C19.1 22 20 21.1 20 20V10C20 8.9 19.1 8 18 8ZM12 17C10.9 17 10 16.1 10 15C10 13.9 10.9 13 12 13C13.1 13 14 13.9 14 15C14 16.1 13.1 17 12 17ZM15.1 8H8.9V6C8.9 4.29 10.29 2.9 12 2.9C13.71 2.9 15.1 4.29 15.1 6V8Z" fill="white"/>
-                </svg>
-              </span>
-              <input 
-                type="password" 
-                placeholder="Password" 
-                value={createPassword} 
-                onChange={(e) => setCreatePassword(e.target.value)} 
+              <input
+                type="password"
+                placeholder="Contraseña"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
               />
             </div>
-
-            {message && <div className="login-message">{message}</div>}
-
-            <button type="submit" className="btn-signin">Crear Cuenta</button>
-
-            <div className="crear-Cuenta">
-              <p>Already have an cuenta?</p>
-              <button type="button" className="btn-crear-cuenta" onClick={() => setView('login')}>
-                Sign In
-              </button>
-            </div>
+            <button type="submit" className="btn-signin" disabled={loading}>
+              {loading ? 'Creando cuenta...' : 'Crear Cuenta'}
+            </button>
+            <button type="button" className="btn-back" onClick={handleMainMenu}>
+              Volver
+            </button>
           </form>
         )}
 
-        {view === 'change' && (
-          <form className="login-form" onSubmit={handleChange}>
-            <h3 className="form-title">Change Password</h3>
-            
-            <div className="input-group">
-              <span className="input-icon">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                  <path d="M12 12C14.21 12 16 10.21 16 8C16 5.79 14.21 4 12 4C9.79 4 8 5.79 8 8C8 10.21 9.79 12 12 12ZM12 14C9.33 14 4 15.34 4 18V20H20V18C20 15.34 14.67 14 12 14Z" fill="white"/>
-                </svg>
-              </span>
-              <input 
-                type="text" 
-                placeholder="Username or Email" 
-                value={inputUser} 
-                onChange={(e) => setInputUser(e.target.value)} 
-              />
-            </div>
-
-            <div className="input-group">
-              <span className="input-icon">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                  <path d="M18 8H17V6C17 3.24 14.76 1 12 1C9.24 1 7 3.24 7 6V8H6C4.9 8 4 8.9 4 10V20C4 21.1 4.9 22 6 22H18C19.1 22 20 21.1 20 20V10C20 8.9 19.1 8 18 8ZM12 17C10.9 17 10 16.1 10 15C10 13.9 10.9 13 12 13C13.1 13 14 13.9 14 15C14 16.1 13.1 17 12 17ZM15.1 8H8.9V6C8.9 4.29 10.29 2.9 12 2.9C13.71 2.9 15.1 4.29 15.1 6V8Z" fill="white"/>
-                </svg>
-              </span>
-              <input 
-                type="password" 
-                placeholder="Current Password" 
-                value={currentPassword} 
-                onChange={(e) => setCurrentPassword(e.target.value)} 
-              />
-            </div>
-
-            <div className="input-group">
-              <span className="input-icon">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                  <path d="M18 8H17V6C17 3.24 14.76 1 12 1C9.24 1 7 3.24 7 6V8H6C4.9 8 4 8.9 4 10V20C4 21.1 4.9 22 6 22H18C19.1 22 20 21.1 20 20V10C20 8.9 19.1 8 18 8ZM12 17C10.9 17 10 16.1 10 15C10 13.9 10.9 13 12 13C13.1 13 14 13.9 14 15C14 16.1 13.1 17 12 17ZM15.1 8H8.9V6C8.9 4.29 10.29 2.9 12 2.9C13.71 2.9 15.1 4.29 15.1 6V8Z" fill="white"/>
-                </svg>
-              </span>
-              <input 
-                type="password" 
-                placeholder="New Password" 
-                value={newPassword} 
-                onChange={(e) => setNewPassword(e.target.value)} 
-              />
-            </div>
-
-            {message && <div className="login-message">{message}</div>}
-
-            <button type="submit" className="btn-signin">Change Password</button>
-
-            
-          </form>
-        )}
+        {/* MENSAJE */}
+        {message && <p className={`login-message ${messageType}`}>{message}</p>}
       </div>
     </div>
   );
-}
+};
 
 export default Login;

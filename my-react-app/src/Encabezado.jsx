@@ -34,7 +34,15 @@ function Logo(){
 
 
 function Menu({ onNavigate }){
-    const isLoggedIn = Boolean(localStorage.getItem('currentUser'));
+    const currentUser = (() => {
+        try {
+            return JSON.parse(localStorage.getItem('currentUser') || 'null');
+        } catch {
+            return null;
+        }
+    })();
+    const isLoggedIn = Boolean(currentUser);
+    const isAdmin = currentUser?.rol === 'admin';
 
     const handleLogout = () => {
         localStorage.removeItem('currentUser');
@@ -53,10 +61,9 @@ function Menu({ onNavigate }){
                 <li onClick={() => onNavigate?.("conciertos")}>Conciertos</li>
                 {isLoggedIn ? (
                     <>
-                        <li onClick={() => onNavigate?.("usuarios")}>Usuarios</li>
+                        {isAdmin && <li onClick={() => onNavigate?.("usuarios")}>Usuarios</li>}
                         <li onClick={() => onNavigate?.("categorias")}>Categorias</li>
                         <li onClick={() => onNavigate?.("carrito")}>Carrito</li>
-                        <li onClick={() => onNavigate?.("registrarProductos")}>Registrar Productos</li>
                         <li onClick={handleLogout}>Cerrar Sesión</li>
                     </>
                 ) : (

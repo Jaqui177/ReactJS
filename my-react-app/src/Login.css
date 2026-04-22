@@ -72,6 +72,15 @@
   text-align: center;
 }
 
+.login-form h2 {
+  color: white;
+  font-size: 24px;
+  font-weight: 600;
+  margin: 0 0 30px 0;
+  text-align: center;
+  width: 100%;
+}
+
 /* User Icon */
 .user-icon {
   margin-bottom: 30px;
@@ -160,11 +169,23 @@
 
 /* Messages */
 .login-message {
-  color: #ffeb3b;
   font-size: 14px;
   text-align: center;
   min-height: 20px;
   font-weight: 500;
+  margin-top: 15px;
+  padding: 10px;
+  border-radius: 8px;
+}
+
+.login-message.error {
+  color: #ff6b6b;
+  background: rgba(255, 107, 107, 0.2);
+}
+
+.login-message.success {
+  color: #51cf66;
+  background: rgba(81, 207, 102, 0.2);
 }
 
 /* Sign In button */
@@ -172,7 +193,7 @@
   width: 100%;
   max-width: 400px;
   padding: 16px;
-  margin-top: 20px;
+  margin-top: 10px;
   background: white;
   color: #9b59b6;
   border: none;
@@ -184,13 +205,18 @@
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
 }
 
-.btn-signin:hover {
+.btn-signin:hover:not(:disabled) {
   transform: translateY(-2px);
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
 }
 
-.btn-signin:active {
+.btn-signin:active:not(:disabled) {
   transform: translateY(0);
+}
+
+.btn-signin:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
 }
 
 /* Create account section */
@@ -222,6 +248,25 @@
   color: #9b59b6;
 }
 
+.btn-back {
+  background: transparent;
+  border: 2px solid white;
+  color: white;
+  padding: 12px 25px;
+  border-radius: 25px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+  width: 100%;
+  max-width: 400px;
+}
+
+.btn-back:hover {
+  background: white;
+  color: #9b59b6;
+}
+
 /* Select role */
 .select-role {
   display: flex;
@@ -231,10 +276,22 @@
   color: white;
 }
 
+.select-role h2 {
+  font-size: 24px;
+  font-weight: 600;
+  margin: 0;
+  width: 100%;
+}
+
 .select-role h3 {
   font-size: 24px;
   font-weight: 600;
   margin: 0;
+}
+
+.select-role button {
+  width: 100%;
+  max-width: 400px;
 }
 
 .btn-cliente,
